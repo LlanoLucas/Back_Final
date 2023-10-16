@@ -23,18 +23,19 @@ app.get("/products", async (req, res) => {
   }
 });
 
-app.get("/products/:id", async (req, res) => {
+app.get("/products/:pid", async (req, res) => {
   try {
-    const pId = parseInt(req.params.id);
+    const pId = parseInt(req.params.pid);
 
     if (isNaN(pId)) {
-      return res.status(400).send("ID Inválido");
+      return res.status(400).send("Error: El ID solicitado es inválido");
     }
 
-    const product = productManager.getProductById(pId);
+    const product = await productManager.getProductById(pId);
 
-    if (!product) res.status(400).send("El producto solicitado no existe");
-    else {
+    if (!product) {
+      res.status(400).send("El producto solicitado no existe");
+    } else {
       res.send(product);
     }
   } catch (err) {

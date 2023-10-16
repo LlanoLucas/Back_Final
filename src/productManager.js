@@ -86,10 +86,11 @@ class ProductManager {
     }
   };
 
-  getProductById = (id) => {
-    const product = this.products.find((product) => product.id === id);
+  getProductById = async (id) => {
+    const products = await this.getProducts();
+    const product = products.find((p) => p.id === id);
 
-    if (product) throw new Error(`El producto ${id} no existe\n`);
+    if (!product) throw new Error(`El producto ${id} no existe\n`);
 
     console.log(`Producto ${id} buscado:\n${JSON.stringify(product)}:\n`);
     return product;
