@@ -50,3 +50,16 @@ app.get("/products/:pid", async (req, res) => {
 app.listen(8080, () => {
   console.log(`Server corriendo en el puerto 8080...`);
 });
+
+/*
+SOLICITUDES DEL TESTING
+
+http://localhost:8080/products
+
+http://localhost:8080/products?limit=5
+
+http://localhost:8080/products/2
+
+http://localhost:8080/products/34123123
+
+*/
