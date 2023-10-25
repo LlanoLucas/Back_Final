@@ -13,8 +13,8 @@ class ProductManager {
     return lastProductId + 1;
   };
 
-  validateProduct = ({ title, code, description, thumbnail, stock }) => {
-    if ((!title, !code, !description, !thumbnail, !stock)) {
+  validateProduct = ({ title, code, description, price, category, stock }) => {
+    if ((!title, !code, !description, !category, !price, !stock)) {
       console.error("Todos los campos deben tener un valor\n");
       return false;
     }
@@ -35,18 +35,22 @@ class ProductManager {
     title,
     description,
     price,
-    thumbnail,
+    category,
+    thumbnails,
     code,
     stock,
+    status,
   }) => {
     const productToAdd = {
       id: this.generateId(),
       title,
       description,
       price,
-      thumbnail,
+      category,
+      thumbnails,
       code,
       stock,
+      status,
     };
 
     if (!this.validateProduct(productToAdd)) {
@@ -56,7 +60,10 @@ class ProductManager {
     this.products.push(productToAdd);
 
     try {
-      await fs.promises.writeFile(this.path, JSON.stringify(this.products));
+      await fs.promises.writeFile(
+        this.path,
+        JSON.stringify(this.products, null, "\t")
+      );
     } catch (error) {
       console.error("Error escribiendo el archivo:\n");
     }
@@ -145,99 +152,4 @@ class ProductManager {
   };
 }
 
-export const productManager = new ProductManager("data.json");
-
-// const productToAdd = {
-//   title: "producto prueba",
-//   description: "Este es un producto prueba",
-//   price: 100,
-//   thumbnail: "Sin imagen",
-//   code: "abc123",
-//   stock: 11,
-// };
-
-// const productToAdd2 = {
-//   title: "producto prueba 2",
-//   description: "Este es el segundo producto prueba",
-//   price: 200,
-//   thumbnail: "Sin imagen",
-//   code: "abc234",
-//   stock: 22,
-// };
-
-// const productToAdd3 = {
-//   title: "producto prueba 3",
-//   description: "Este es el tercer producto prueba",
-//   price: 300,
-//   thumbnail: "Sin imagen",
-//   code: "abc345",
-//   stock: 33,
-// };
-// const productToAdd4 = {
-//   title: "producto prueba 4",
-//   description: "Este es el cuarto producto prueba",
-//   price: 400,
-//   thumbnail: "Sin imagen",
-//   code: "abc456",
-//   stock: 44,
-// };
-// const productToAdd5 = {
-//   title: "producto prueba 5",
-//   description: "Este es el quinto producto prueba",
-//   price: 500,
-//   thumbnail: "Sin imagen",
-//   code: "abc567",
-//   stock: 55,
-// };
-// const productToAdd6 = {
-//   title: "producto prueba 6",
-//   description: "Este es el sexto producto prueba",
-//   price: 600,
-//   thumbnail: "Sin imagen",
-//   code: "abc678",
-//   stock: 66,
-// };
-// const productToAdd7 = {
-//   title: "producto prueba 7",
-//   description: "Este es el séptimo producto prueba",
-//   price: 700,
-//   thumbnail: "Sin imagen",
-//   code: "abc789",
-//   stock: 77,
-// };
-// const productToAdd8 = {
-//   title: "producto prueba 8",
-//   description: "Este es el octavo producto prueba",
-//   price: 800,
-//   thumbnail: "Sin imagen",
-//   code: "abc899",
-//   stock: 88,
-// };
-
-// const productToAdd9 = {
-//   title: "producto prueba 9",
-//   description: "Este es el noveno producto prueba",
-//   price: 900,
-//   thumbnail: "Sin imagen",
-//   code: "abc999",
-//   stock: 99,
-// };
-// const productToAdd10 = {
-//   title: "producto prueba 10",
-//   description: "Este es el décimo producto prueba",
-//   price: 1000,
-//   thumbnail: "Sin imagen",
-//   code: "abc100",
-//   stock: 100,
-// };
-
-// await productManager.addProduct(productToAdd);
-// await productManager.addProduct(productToAdd2);
-// await productManager.addProduct(productToAdd3);
-// await productManager.addProduct(productToAdd4);
-// await productManager.addProduct(productToAdd5);
-// await productManager.addProduct(productToAdd6);
-// await productManager.addProduct(productToAdd7);
-// await productManager.addProduct(productToAdd8);
-// await productManager.addProduct(productToAdd9);
-// await productManager.addProduct(productToAdd10);
+export const productManager = new ProductManager("../api/products.json");

@@ -1,65 +1,16 @@
 import express from "express";
-import { productManager } from "./productManager.js";
+import productsRouter from "./router/products.router.js";
+import cartsRouter from "./router/carts.router.js";
 
 const app = express();
+app.use(express.json());
 
-app.get("/products", async (req, res) => {
-  try {
-    const products = await productManager.getProducts();
-
-    const limit = parseInt(req.query.limit);
-
-    if (!limit) res.send(products);
-    else {
-      const queryLimit = products.slice(0, limit);
-      res.json(queryLimit);
-    }
-  } catch (err) {
-    res
-      .status(500)
-      .send(
-        `Ocurrió un error al realizar la petición de los productos\n\n${err}`
-      );
-  }
+app.get("/", (req, res) => {
+  res.status(201).json({ message: "Server Running Successfully" });
 });
 
-app.get("/products/:pid", async (req, res) => {
-  try {
-    const pId = parseInt(req.params.pid);
+app.use("/api/products", productsRouter);
+app.use("/api/carts", cartsRouter);
 
-    if (isNaN(pId)) {
-      return res.status(400).send("Error: El ID solicitado es inválido");
-    }
-
-    const product = await productManager.getProductById(pId);
-
-    if (!product) {
-      res.status(400).send("El producto solicitado no existe");
-    } else {
-      res.send(product);
-    }
-  } catch (err) {
-    res
-      .status(500)
-      .send(
-        `Ocurrió un error al realizar la petición del producto... ( ${err})`
-      );
-  }
-});
-
-app.listen(8080, () => {
-  console.log(`Server corriendo en el puerto 8080...`);
-});
-
-/*
-SOLICITUDES DEL TESTING
-
-http://localhost:8080/products
-
-http://localhost:8080/products?limit=5
-
-http://localhost:8080/products/2
-
-http://localhost:8080/products/34123123
-
-*/
+const PORT = 8080;
+app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
