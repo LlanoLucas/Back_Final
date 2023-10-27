@@ -15,7 +15,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.post("/:cid/producto/:pid", async (req, res) => {
+router.post("/:cid/product/:pid", async (req, res) => {
   try {
     const idCarrito = parseInt(req.params.cid);
     const idProducto = parseInt(req.params.pid);
@@ -52,6 +52,16 @@ router.get("/:cid", async (req, res) => {
     res.status(200).send(carrito);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/", async (req, res) => {
+  const carts = await cartManager.getCarts();
+
+  try {
+    res.status(200).json(carts);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
   }
 });
 
