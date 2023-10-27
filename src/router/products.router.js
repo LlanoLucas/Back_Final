@@ -2,14 +2,15 @@ import { Router } from "express";
 import { productManager } from "../managers/productManager.js";
 
 const router = Router();
-const products = await productManager.getProducts();
 
-router.get("/products", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const limit = parseInt(req.query.limit);
 
-    if (!limit) res.send(products);
-    else {
+    if (!limit) {
+      const products = await productManager.getProducts();
+      res.json(products);
+    } else {
       const queryLimit = products.slice(0, limit);
       res.json(queryLimit);
     }
@@ -35,7 +36,7 @@ router.get("/:pid", async (req, res) => {
     if (!product) {
       res.status(400).send("El producto solicitado no existe");
     } else {
-      res.send(product);
+      res.json(product);
     }
   } catch (err) {
     res
@@ -48,23 +49,31 @@ router.get("/:pid", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { title, description, price, thumbnail, code, category, stock } =
-      req.body;
+    const {
+      title,
+      description,
+      price,
+      thumbnails,
+      code,
+      category,
+      stock,
+      status = true,
+    } = req.body;
 
     if (!title || !description || !code || !price || !stock || !category) {
       return res.status(400).json({ error: "Todos los campos son requeridos" });
     }
 
-    const addProduct = await productManager.addProduct(
+    const addProduct = await productManager.addProduct({
       title,
       description,
       price,
-      thumbnail,
+      thumbnails: [thumbnails], // Convert thumbnail to an array
       code,
       category,
       stock,
-      (status = true)
-    );
+      status: status === "true", // Convert status to a boolean
+    });
 
     if (addProduct) {
       return res.status(201).json({
@@ -90,7 +99,7 @@ router.put("/:pid", async (req, res) => {
         .json({ error: "No se puede modificar el ID del producto" });
     }
 
-    const existingProduct = products.find((item) => item.id === productId);
+    const existingProduct = await productManager.getProductById(productId);
 
     if (!existingProduct) {
       return res
@@ -101,7 +110,7 @@ router.put("/:pid", async (req, res) => {
     await productManager.updateProduct(productId, updated);
 
     res.status(200).json({
-      message: `El producto (ID: ${productId}) fue acutalizado correctamente!`,
+      message: `El producto (ID: ${productId}) fue actualizado correctamente!`,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -112,26 +121,20 @@ router.delete("/:pid", async (req, res) => {
   try {
     const productId = parseInt(req.params.pid);
 
-    // Busca el producto con el ID especificado
-    const productoExistente = await products.find(
-      (item) => item.id === productId
-    );
+    // Llama a productManager para eliminar el producto
+    const productoEliminado = await productManager.deleteProduct(productId);
 
-    // Si el producto no existe, devuelve un error 404
-    if (!productoExistente) {
-      return res
+    if (productoEliminado) {
+      // Envía un mensaje de éxito cuando el producto se elimina con éxito
+      res.status(200).json({
+        message: `Producto con el ID ${productId} eliminado exitosamente`,
+      });
+    } else {
+      // El producto no existía
+      res
         .status(404)
         .json({ error: `El producto con el ID ${productId} no existe` });
     }
-
-    // Llama a productManager para eliminar el producto
-    const productoEliminado = await productManager.deleteProduct(productId);
-    console.log(productoEliminado); // Registra el producto eliminado (opcional)
-
-    // Envía un mensaje de éxito cuando el producto se elimina con éxito
-    res.status(200).json({
-      message: `Producto con el ID ${productId} eliminado exitosamente`,
-    });
   } catch (err) {
     // Maneja cualquier error inesperado
     res.status(500).json({ error: err.message });

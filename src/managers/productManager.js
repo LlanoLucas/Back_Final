@@ -7,28 +7,15 @@ class ProductManager {
     this.format = "utf-8";
   }
 
-  generateId = () => {
+  generateId = async () => {
+    const products = await this.getProducts();
+
     const lastProductId =
-      this.products.length > 0 ? this.products[this.products.length - 1].id : 0;
-    return lastProductId + 1;
-  };
+      products.length > 0 ? products[products.length - 1].id : 0;
 
-  validateProduct = ({ title, code, description, price, category, stock }) => {
-    if ((!title, !code, !description, !category, !price, !stock)) {
-      console.error("Todos los campos deben tener un valor\n");
-      return false;
-    }
+    const nextId = lastProductId + 1;
 
-    const isCodeRepeated = this.products.some((p) => p.code === code);
-
-    if (isCodeRepeated) {
-      console.error(
-        `Error: Ya existe un producto con el código ${code} ingresado.\n`
-      );
-      return false;
-    }
-
-    return true;
+    return nextId;
   };
 
   addProduct = async ({
@@ -39,48 +26,70 @@ class ProductManager {
     thumbnails,
     code,
     stock,
-    status,
   }) => {
+    const products = await this.getProducts();
+
+    // Define un array de campos requeridos
+    const requiredFields = [
+      "title",
+      "description",
+      "code",
+      "price",
+      "stock",
+      "category",
+    ];
+
+    // Verifica si ya existe un producto con el mismo código
+    const isCodeRepeated = products.some((p) => p.code === code);
+
+    if (isCodeRepeated) {
+      return console.error(
+        `Error: Ya existe un producto con el código ${code}.`
+      );
+    }
+
     const productToAdd = {
-      id: this.generateId(),
+      id: await this.generateId(),
       title,
       description,
       price,
       category,
-      thumbnails,
+      thumbnails: thumbnails || [],
       code,
       stock,
-      status,
+      status: true,
     };
 
-    if (!this.validateProduct(productToAdd)) {
-      console.log("Datos inválidos\n");
+    const haveEmptyValue = Object.values(productToAdd).some(
+      (item) => item === ""
+    );
+
+    if (haveEmptyValue) {
+      return console.error("Error: Todos los campos deben tener un valor.");
     }
 
-    this.products.push(productToAdd);
+    products.push(productToAdd);
+    this.products = products;
 
     try {
       await fs.promises.writeFile(
         this.path,
         JSON.stringify(this.products, null, "\t")
       );
+      console.log(
+        `Producto ${productToAdd.id} agregado: ${JSON.stringify(productToAdd)}`
+      );
+      return productToAdd;
     } catch (error) {
-      console.error("Error escribiendo el archivo:\n");
+      console.error("Error al escribir el archivo:\n", error);
+      return null;
     }
-
-    console.log(
-      `Producto ${JSON.stringify(productToAdd.id)} agregado:\n ${JSON.stringify(
-        productToAdd
-      )}\n`
-    );
-    return productToAdd;
   };
 
   getProducts = async () => {
     try {
       const data = await fs.promises.readFile(this.path, this.format);
       console.log("Productos:\n", JSON.parse(data));
-      console.log();
       return JSON.parse(data);
     } catch (err) {
       if (err.code === "ENOENT") {
@@ -141,15 +150,17 @@ class ProductManager {
 
       products.splice(productIndex, 1);
       console.log(`Producto ${id} eliminado\n`);
+      this.products = products;
 
       await fs.promises.writeFile(
         this.path,
         JSON.stringify(products, null, "\t")
       );
+      return true;
     } catch (error) {
       console.error(error.message);
     }
   };
 }
 
-export const productManager = new ProductManager("../api/products.json");
+export const productManager = new ProductManager("src/api/products.json");
