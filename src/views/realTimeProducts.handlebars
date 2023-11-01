@@ -1,0 +1,30 @@
+<div class="mt-8">
+  <h1 class="text-4xl text-center font-bold">COURSES</h1>
+  <table class="flex justify-center mt-5 text-lg w-11/12 m-auto">
+    <tr class="bg-gray-300 text-center border-2 border-black">
+      <th class="border-2 border-black">CODE</th>
+      <th class="border-2 border-black">COURSE</th>
+      <th class="border-2 border-black">CATEGORY</th>
+      <th class="border-2 border-black">DESCRIPTION</th>
+      <th class="border-2 border-black px-2">PLACES</th>
+      <th class="border-2 border-black px-2">PRICE</th>
+      <th class="px-2">DELETE</th>
+    </tr>
+    {{#each products}}
+      <tr class="text-center border-2 border-black">
+        <td class="border-2 border-black px-2">{{this.code}}</td>
+        <td class="border-2 border-black px-2">{{this.title}}</td>
+        <td class="border-2 border-black px-2">{{this.category}}</td>
+        <td
+          class="border-2 border-black text-start px-2"
+        >{{this.description}}</td>
+        <td class="border-2 border-black px-2">{{this.stock}}</td>
+        <td class="border-2 border-black">${{this.price}}</td>
+        <td><button
+            id="btnDelete"
+            class="font-semibold text-red-600 active:text-red-800"
+          >Delete</button></td>
+      </tr>
+    {{/each}}
+  </table>
+</div>
