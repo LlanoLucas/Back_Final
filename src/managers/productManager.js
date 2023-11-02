@@ -76,9 +76,9 @@ class ProductManager {
         this.path,
         JSON.stringify(this.products, null, "\t")
       );
-      console.log(
-        `Producto ${productToAdd.id} agregado: ${JSON.stringify(productToAdd)}`
-      );
+      // console.log(
+      //   `Producto ${productToAdd.id} agregado: ${JSON.stringify(productToAdd)}`
+      // );
       return productToAdd;
     } catch (error) {
       console.error("Error al escribir el archivo:\n", error);
@@ -89,12 +89,12 @@ class ProductManager {
   getProducts = async () => {
     try {
       const data = await fs.promises.readFile(this.path, this.format);
-      console.log("Productos:\n", JSON.parse(data));
+      // console.log("Productos:\n", JSON.parse(data));
       return JSON.parse(data);
     } catch (err) {
       if (err.code === "ENOENT") {
         await fs.promises.writeFile(this.path, "[]");
-        console.log(`Archivo "${this.path}" creado\n`);
+        // console.log(`Archivo "${this.path}" creado\n`);
         return [];
       } else {
         console.error("Error al leer el archivo:\n", err);
@@ -108,7 +108,7 @@ class ProductManager {
 
     if (!product) throw new Error(`El producto ${id} no existe\n`);
 
-    console.log(`Producto ${id} buscado:\n${JSON.stringify(product)}:\n`);
+    // console.log(`Producto ${id} buscado:\n${JSON.stringify(product)}:\n`);
     return product;
   };
 
@@ -126,11 +126,10 @@ class ProductManager {
           this.path,
           JSON.stringify(products, null, "\t")
         );
-        console.log(
-          `Producto ${id} editado:\n`,
-          JSON.stringify(products[productIndex])
-        );
-        console.log();
+        // console.log(
+        //   `Producto ${id} editado:\n`,
+        //   JSON.stringify(products[productIndex])
+        // );
       } else {
         throw new Error("No se encontró el producto\n");
       }
@@ -149,7 +148,7 @@ class ProductManager {
       }
 
       products.splice(productIndex, 1);
-      console.log(`Producto ${id} eliminado\n`);
+      // console.log(`Producto ${id} eliminado\n`);
       this.products = products;
 
       await fs.promises.writeFile(

@@ -18,8 +18,8 @@ const httpServer = app.listen(PORT, () => {
 const io = new Server(httpServer);
 // app.set("socketio", io);
 
-io.on("connection", (socket) => {
-  console.log(`Nuevo cliente conectado`);
+io.on("connection", (httpServer) => {
+  console.log(`New Client Connected`);
 });
 
 // io.on("error", (err) => {

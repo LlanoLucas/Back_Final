@@ -1,30 +1,153 @@
-<div class="mt-8">
-  <h1 class="text-4xl text-center font-bold">COURSES</h1>
-  <table class="flex justify-center mt-5 text-lg w-11/12 m-auto">
-    <tr class="bg-gray-300 text-center border-2 border-black">
-      <th class="border-2 border-black">CODE</th>
-      <th class="border-2 border-black">COURSE</th>
-      <th class="border-2 border-black">CATEGORY</th>
-      <th class="border-2 border-black">DESCRIPTION</th>
-      <th class="border-2 border-black px-2">PLACES</th>
-      <th class="border-2 border-black px-2">PRICE</th>
-      <th class="px-2">DELETE</th>
-    </tr>
-    {{#each products}}
-      <tr class="text-center border-2 border-black">
-        <td class="border-2 border-black px-2">{{this.code}}</td>
-        <td class="border-2 border-black px-2">{{this.title}}</td>
-        <td class="border-2 border-black px-2">{{this.category}}</td>
-        <td
-          class="border-2 border-black text-start px-2"
-        >{{this.description}}</td>
-        <td class="border-2 border-black px-2">{{this.stock}}</td>
-        <td class="border-2 border-black">${{this.price}}</td>
-        <td><button
-            id="btnDelete"
-            class="font-semibold text-red-600 active:text-red-800"
-          >Delete</button></td>
+<div>
+  <h1
+    class="text-center text-lg bg-blue-200 border-b-2 border-black font-bold fixed w-full"
+  >COURSES IN REAL TIME
+    <span
+      class="animate-ping absolute mt-2 ml-1 h-3 w-3 rounded-full bg-sky-400 opacity-75"
+    ></span>
+    <span
+      class="relative inline-flex rounded-full ml-1 h-3 w-3 bg-sky-500"
+    ></span></h1>
+
+  <hr class="text-white" />
+
+  <div class="mt-12 font-semibold text-center">
+    <div>
+      <h5
+        class="font-bold uppercase inline py-0.5 px-2 border-2 rounded-sm border-black bg-blue-200"
+      >Create a course</h5>
+    </div>
+    <div class="mt-5 m-auto flex justify-center">
+      <form id="form">
+        <div class="mb-2 flex justify-between">
+          <label
+            for="title"
+            class="form-label w-28 text-center rounded-sm border-2 border-black"
+          >Product:</label>
+          <input
+            type="text"
+            class="form-control border-b-2 border-blue-200 focus:outline-none focus:border-blue-400 ease-in-out"
+            name="title"
+            id="title"
+            required
+          />
+        </div>
+        <div class="mb-2 flex justify-between">
+          <label
+            for="description"
+            class="form-label w-28 text-center rounded-sm border-2 border-black"
+          >Description:</label>
+          <input
+            type="text"
+            class="form-control border-b-2 border-blue-200 focus:outline-none focus:border-blue-400 ease-in-out"
+            name="description"
+            id="description"
+            required
+          />
+        </div>
+        <div class="mb-2 flex justify-start gap-3">
+          <label
+            for="price"
+            class="form-label w-28 text-center rounded-sm border-2 border-black"
+          >Price</label>
+          <input
+            type="number"
+            class="form-control text-center border-b-2 w-12 border-blue-200 focus:outline-none focus:border-blue-400 ease-in-out"
+            name="price"
+            id="price"
+            step="0.01"
+            required
+          />
+        </div>
+        <div class="mb-2 flex justify-between gap-3">
+          <label
+            for="code"
+            class="form-label w-28 text-center rounded-sm border-2 border-black"
+          >Code:</label>
+          <input
+            type="text"
+            class="form-control border-b-2 border-blue-200 focus:outline-none focus:border-blue-400 ease-in-out"
+            name="code"
+            id="code"
+            required
+          />
+        </div>
+        <div class="mb-2 flex justify-start gap-3">
+          <label
+            for="category"
+            class="form-label w-28 text-center rounded-sm border-2 border-black"
+          >Category:</label>
+          <select
+            class="form-select border-b-2 w-48 border-blue-200 focus:outline-none focus:border-blue-400 ease-in-out"
+            aria-label="Default select example"
+            name="category"
+            id="category"
+            required
+          >
+            <option selected>Choose an Option</option>
+            <option value="Programming">Programming</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Data">Data</option>
+            <option value="Artificial Intelligence">Artificial Intelligence</option>
+            <option value="Others"></option>
+          </select>
+        </div>
+        <div class="mb-2 flex justify-start gap-3">
+          <label
+            for="stock"
+            class="form-label w-28 text-center rounded-sm border-2 border-black"
+          >Stock:</label>
+          <input
+            type="number"
+            class="form-control text-center border-b-2 w-12 border-blue-200 focus:outline-none focus:border-blue-400 ease-in-out"
+            name="stock"
+            id="stock"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          class="form-control mt-1 bg-blue-200 rounded-sm border-2 border-black px-1 py-.5 w-full"
+          id="addProduct"
+        >CONFIRM</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="w-full mt-3 mb-3 h-px bg-gray-400"></div>
+
+  <table class="mt-5 text-lg w-11/12 m-auto">
+    <thead>
+      <tr class="bg-blue-200 text-center border-2 border-black">
+        <th class="border-2 border-black">CODE</th>
+        <th class="border-2 border-black">COURSE</th>
+        <th class="border-2 border-black">CATEGORY</th>
+        <th class="border-2 border-black">DESCRIPTION</th>
+        <th class="border-2 border-black px-2">PLACES</th>
+        <th class="border-2 border-black px-2">PRICE</th>
+        <th class="px-2">DELETE</th>
       </tr>
-    {{/each}}
+    </thead>
+    <tbody id="tbody">
+      {{#each products}}
+        <tr class="text-center border-2 border-black">
+          <td class="border-2 border-black px-2">{{this.code}}</td>
+          <td class="border-2 border-black px-2">{{this.title}}</td>
+          <td class="border-2 border-black px-2">{{this.category}}</td>
+          <td
+            class="border-2 border-black text-start px-2"
+          >{{this.description}}</td>
+          <td class="border-2 border-black px-2">{{this.stock}}</td>
+          <td class="border-2 border-black">${{this.price}}</td>
+          <td><button
+              onclick="deleteProduct({{this.id}})"
+              class="text-red-500 font-semibold active:text-red-700"
+            >Delete</button></td>
+        </tr>
+      {{/each}}
+    </tbody>
   </table>
 </div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/index.js"></script>
