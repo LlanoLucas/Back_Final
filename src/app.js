@@ -16,21 +16,18 @@ const httpServer = app.listen(PORT, () => {
 });
 
 const io = new Server(httpServer);
-// app.set("socketio", io);
 
-io.on("connection", (httpServer) => {
+io.on("connection", (socket) => {
   console.log(`New Client Connected`);
+  socket.on("productList", (data) => {
+    io.emit("updatedProducts", data);
+  });
 });
-
-// io.on("error", (err) => {
-//   console.error(`Server Error: ${err.message}`);
-// });
 
 app.engine("handlebars", handlebars.engine());
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "handlebars");
 
-// // Define your routes
 app.use("/", viewsRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
