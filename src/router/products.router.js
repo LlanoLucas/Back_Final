@@ -1,88 +1,92 @@
 import { Router } from "express";
-import { productManager } from "../managers/productManager.js";
+import ProductsModel from "../dao/models/products.models.js";
+import mongoose from "mongoose";
 
 const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit);
+    const products = await ProductsModel.find().lean().exec();
+    res.json({ status: "success", payload: products });
+    // const limit = parseInt(req.query.limit);
 
-    if (!limit) {
-      const products = await productManager.getProducts();
-      res.json(products);
-    } else {
-      const queryLimit = products.slice(0, limit);
-      res.json(queryLimit);
-    }
+    // if (!limit) {
+    //   const products = await productManager.getProducts();
+    //   res.json(products);
+    // } else {
+    //   const queryLimit = products.slice(0, limit);
+    //   res.json(queryLimit);
+    // }
   } catch (err) {
-    res
-      .status(500)
-      .send(
-        `Ocurrió un error al realizar la petición de los productos\n\n${err}`
-      );
+    res.status(500).json({
+      status: error,
+      message: `Ocurrió un error al realizar la petición de los productos\n\n${err}`,
+    });
   }
 });
 
 router.get("/:pid", async (req, res) => {
   try {
-    const pId = parseInt(req.params.pid);
+    const pId = new mongoose.Types.ObjectId(req.params.pid);
 
-    if (isNaN(pId)) {
-      return res.status(400).send("Error: El ID solicitado es inválido");
+    if (!mongoose.Types.ObjectId.isValid(req.params.pid)) {
+      return res.status(400).json({ error: "Invalid ObjectId" });
     }
 
-    const product = await productManager.getProductById(pId);
-
+    let product = await ProductsModel.findById(pId).lean().exec();
+    // .exec((err, product) => {
+    //   if (err) {
+    //     console.error(`Error buscando el producto por ID: ${err}`);
+    //   } else {
+    //     if (product) {
+    //       res.json({ status: "success", payload: product });
+    //     } else {
+    //       console.log("Producto no encontrado");
+    //     }
+    //   }
+    // });
     if (!product) {
-      res.status(400).send("El producto solicitado no existe");
-    } else {
-      res.json(product);
+      console.error("Producto no encontrado");
     }
+    res.json({ status: "success", payload: product });
   } catch (err) {
-    res
-      .status(500)
-      .send(
-        `Ocurrió un error al realizar la petición del producto... ( ${err})`
-      );
+    res.status(500).json({
+      status: "error",
+      message: `Ocurrió un error al realizar la petición del producto... (${err})`,
+    });
   }
 });
 
 router.post("/", async (req, res) => {
+  const {
+    title,
+    description,
+    price,
+    thumbnails,
+    code,
+    category,
+    stock,
+    status = true,
+  } = req.body;
+
   try {
-    const {
-      title,
-      description,
-      price,
-      thumbnails,
-      code,
-      category,
-      stock,
-      status = true,
-    } = req.body;
+    const productToAdd = {
+      title: title,
+      description: description,
+      price: price,
+      thumbnails: [thumbnails],
+      code: code,
+      category: category,
+      stock: stock,
+      status: status === "true",
+    };
 
-    if (!title || !description || !code || !price || !stock || !category) {
-      return res.status(400).json({ error: "Todos los campos son requeridos" });
-    }
+    const addedProduct = await ProductsModel.create(productToAdd);
 
-    const addProduct = await productManager.addProduct({
-      title,
-      description,
-      price,
-      thumbnails: [thumbnails], // Convert thumbnail to an array
-      code,
-      category,
-      stock,
-      status: status === "true", // Convert status to a boolean
+    return res.status(201).json({
+      message: `Producto (ID: ${addedProduct._id}) añadido exitosamente`,
+      product: addedProduct,
     });
-
-    if (addProduct) {
-      return res.status(201).json({
-        message: `Producto (ID: ${addProduct.id}) añadido con éxito`,
-        product: addProduct,
-      });
-    } else {
-      return res.status(404).json({ error: "Error al agregar producto" });
-    }
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -90,7 +94,7 @@ router.post("/", async (req, res) => {
 
 router.put("/:pid", async (req, res) => {
   try {
-    const productId = parseInt(req.params.pid);
+    const productId = new mongoose.Types.ObjectId(req.params.pid);
     const { id, ...updated } = req.body;
 
     if (id && id !== productId) {
@@ -99,18 +103,15 @@ router.put("/:pid", async (req, res) => {
         .json({ error: "No se puede modificar el ID del producto" });
     }
 
-    const existingProduct = await productManager.getProductById(productId);
-
-    if (!existingProduct) {
-      return res
-        .status(404)
-        .json({ error: `El producto (ID: ${productId}) no existe` });
-    }
-
-    await productManager.updateProduct(productId, updated);
+    const updatedProduct = await ProductsModel.findByIdAndUpdate(
+      productId,
+      updated,
+      { new: true }
+    );
 
     res.status(200).json({
       message: `El producto (ID: ${productId}) fue actualizado correctamente!`,
+      product: updatedProduct,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -119,24 +120,30 @@ router.put("/:pid", async (req, res) => {
 
 router.delete("/:pid", async (req, res) => {
   try {
-    const productId = parseInt(req.params.pid);
+    const productId = new mongoose.Types.ObjectId(req.params.pid);
 
-    // Llama a productManager para eliminar el producto
-    const productoEliminado = await productManager.deleteProduct(productId);
-
-    if (productoEliminado) {
-      // Envía un mensaje de éxito cuando el producto se elimina con éxito
-      res.status(200).json({
-        message: `Producto con el ID ${productId} eliminado exitosamente`,
-      });
-    } else {
-      // El producto no existía
-      res
-        .status(404)
-        .json({ error: `El producto con el ID ${productId} no existe` });
+    // Check if productId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(req.params.pid)) {
+      return res.status(400).json({ error: "Invalid ObjectId" });
     }
+
+    const deletedProduct = await ProductsModel.findByIdAndDelete(productId);
+
+    if (!deletedProduct) {
+      res.status(404).json({
+        status: "error",
+        message: `El producto (ID: ${productId}) no se ha encontrado`,
+      });
+      console.error(`El producto (ID: ${productId}) no se ha encontrado`);
+      return;
+    }
+
+    res.status(200).json({
+      message: `El producto (ID: ${productId}) ha sido eliminado correctamente`,
+    });
+
+    console.log("Producto eliminado:", deletedProduct);
   } catch (err) {
-    // Maneja cualquier error inesperado
     res.status(500).json({ error: err.message });
   }
 });

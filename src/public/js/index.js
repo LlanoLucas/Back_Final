@@ -17,7 +17,7 @@ form.addEventListener("submit", async (e) => {
   };
 
   try {
-    const res = await fetch("/api/products", {
+    const res = await fetch("/dao/products", {
       method: "POST",
       body: JSON.stringify(product),
       headers: {
@@ -31,18 +31,20 @@ form.addEventListener("submit", async (e) => {
       throw new Error(result.error);
     }
 
-    const productsEmit = await fetch("/api/products")
+    await fetch("/dao/products")
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         return response.json();
       })
+      .then((jsonResponse) => {
+        const productsEmit = jsonResponse.payload;
+        socket.emit("productList", productsEmit);
+      })
       .catch((error) => {
         console.error("Fetch error:", error);
       });
-
-    socket.emit("productList", productsEmit);
 
     document.querySelector("#title").value = "";
     document.querySelector("#description").value = "";
@@ -55,28 +57,43 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-const deleteProduct = async (id) => {
+const deleteProduct = async (_id) => {
   try {
-    const res = await fetch(`/api/products/${id}`, {
+    const id = _id.toString();
+    // Send DELETE request to delete the product
+    const deleteResponse = await fetch(`/dao/products/${id}`, {
       method: "DELETE",
     });
-    const result = await res.json();
 
-    if (result.status === "error") throw new Error(result.error);
-    const productsEmit = await fetch("/api/products")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .catch((error) => {
-        console.error("Fetch error:", error);
-      });
+    // Check if the delete request was successful
+    if (!deleteResponse.ok) {
+      throw new Error(
+        `Delete request failed. Status: ${deleteResponse.status}`
+      );
+    }
 
+    const deleteResult = await deleteResponse.json();
+
+    // Check if the delete operation on the server was successful
+    if (deleteResult.status === "error") {
+      throw new Error(deleteResult.error);
+    }
+
+    // Fetch the updated product list
+    const fetchResponse = await fetch("/dao/products");
+
+    // Check if the fetch request was successful
+    if (!fetchResponse.ok) {
+      throw new Error(`Fetch error! Status: ${fetchResponse.status}`);
+    }
+
+    const jsonResponse = await fetchResponse.json();
+    const productsEmit = jsonResponse.payload;
+
+    // Emit the updated product list to the socket
     socket.emit("productList", productsEmit);
   } catch (error) {
-    console.log(error);
+    console.error("Error in deleteProduct:", error);
   }
 };
 
@@ -97,11 +114,10 @@ socket.on("updatedProducts", (products) => {
     <td class="border-2 border-black px-2">${item.stock}</td>
     <td class="border-2 border-black">${item.price}</td>
     <td><button
-        onclick="deleteProduct(${item.id})"
+        onclick="deleteProduct('${item._id}')"
         class="text-red-500 font-semibold active:text-red-700"
       >Delete</button></td>
     `;
-
     tbody.appendChild(tr);
   });
 });

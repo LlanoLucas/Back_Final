@@ -1,37 +1,62 @@
 import express from "express";
+import mongoose from "mongoose";
 import { PORT } from "./utils.js";
 import __dirname from "./utils.js";
 import handlebars from "express-handlebars";
+import { Server } from "socket.io";
 import productsRouter from "./router/products.router.js";
 import cartsRouter from "./router/carts.router.js";
 import viewsRouter from "./router/views.router.js";
-import { Server } from "socket.io";
+import MessageModel from "./dao/models/messages.models.js";
 
 const app = express();
 app.use(express.static(`${__dirname}/public`));
 app.use(express.json());
 
-const httpServer = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-const io = new Server(httpServer);
-
-io.on("connection", (socket) => {
-  console.log(`New Client Connected`);
-  socket.on("productList", (data) => {
-    io.emit("updatedProducts", data);
-  });
-});
+const mongoURL =
+  "mongodb+srv://lll04:mycoderhouseproject@clusterbackend.eksdwt8.mongodb.net/";
+const mongoDBName = "cluster_backend";
 
 app.engine("handlebars", handlebars.engine());
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "handlebars");
 
-app.use("/", viewsRouter);
-app.use("/api/products", productsRouter);
-app.use("/api/carts", cartsRouter);
-
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "Server is running successfully" });
+  res.render("index", { name: "Juan" });
 });
+
+app.use("/home", viewsRouter);
+app.use("/dao/products", productsRouter);
+app.use("/dao/carts", cartsRouter);
+
+mongoose
+  .connect(mongoURL, { dbName: mongoDBName })
+  .then(() => {
+    console.log("DB connected");
+    const httpServer = app.listen(PORT, () =>
+      console.log(`Listening on port ${PORT}...`)
+    );
+
+    const io = new Server(httpServer);
+    app.set("socketio", io);
+
+    io.on("connection", async (socket) => {
+      console.log("New client connected");
+
+      socket.on("productList", (data) => {
+        io.emit("updatedProducts", data);
+      });
+
+      let messages = (await MessageModel.find().exec()) || [];
+
+      socket.broadcast.emit("alerta");
+      socket.emit("logs", messages);
+
+      socket.on("message", async (data) => {
+        messages.push(data);
+        await MessageModel.create(messages);
+        io.emit("logs", messages);
+      });
+    });
+  })
+  .catch((e) => console.error("Error connecting to the database:", e));

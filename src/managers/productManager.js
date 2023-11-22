@@ -162,4 +162,4 @@ class ProductManager {
   };
 }
 
-export const productManager = new ProductManager("src/api/products.json");
+export const productManager = new ProductManager("src/dao/products.json");
