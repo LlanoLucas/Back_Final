@@ -9,7 +9,7 @@
       <th class="border-2 border-black px-2">PLACES</th>
       <th class="border-2 border-black px-2">PRICE</th>
     </tr>
-    {{#each products}}
+    {{#each products.docs}}
       <tr class="text-center border-2 border-black">
         <td class="border-2 border-black px-2">{{this.code}}</td>
         <td class="border-2 border-black px-2">{{this.title}}</td>
@@ -22,4 +22,24 @@
       </tr>
     {{/each}}
   </table>
+
+  <section class="block mt-5 text-2xl">
+    <ul class="flex justify-center items-center gap-3">
+      {{#if products.hasPrevPage}}
+        <li><a
+            class="cursor-pointer px-2 pb-1 text-blue-300 rounded-full hover:bg-blue-300 hover:text-white active:bg-blue-400 transition-all duration-300"
+            href="/home?limit={{products.limit}}&page={{products.prevPage}}{{#if sort}}&sort={{sort}}{{/if}}"
+          >←</a></li>
+      {{/if}}
+      <li><b class="font-semibold">{{products.page}}</b>
+        of
+        {{products.totalPages}}</li>
+      {{#if products.hasNextPage}}
+        <li><a
+            class="cursor-pointer px-2 pb-1 text-blue-300 rounded-full hover:bg-blue-300 hover:text-white active:bg-blue-400 transition-all duration-300"
+            href="/home?limit={{products.limit}}&page={{products.nextPage}}{{#if sort}}&sort={{sort}}{{/if}}"
+          >→</a></li>
+      {{/if}}
+    </ul>
+  </section>
 </div>

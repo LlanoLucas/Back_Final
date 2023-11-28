@@ -112,7 +112,7 @@ socket.on("updatedProducts", (products) => {
       class="border-2 border-black text-start px-2"
     >${item.description}</td>
     <td class="border-2 border-black px-2">${item.stock}</td>
-    <td class="border-2 border-black">${item.price}</td>
+    <td class="border-2 border-black">$${item.price}</td>
     <td><button
         onclick="deleteProduct('${item._id}')"
         class="text-red-500 font-semibold active:text-red-700"

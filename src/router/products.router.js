@@ -6,20 +6,21 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const products = await ProductsModel.find().lean().exec();
-    res.json({ status: "success", payload: products });
-    // const limit = parseInt(req.query.limit);
+    const limit = parseInt(req.query?.limit ?? 10);
 
-    // if (!limit) {
-    //   const products = await productManager.getProducts();
-    //   res.json(products);
-    // } else {
-    //   const queryLimit = products.slice(0, limit);
-    //   res.json(queryLimit);
-    // }
+    const result = await ProductsModel.paginate(
+      {},
+      {
+        page: 1,
+        limit: limit,
+        lean: true,
+      }
+    );
+
+    res.json({ status: "success", payload: result });
   } catch (err) {
     res.status(500).json({
-      status: error,
+      status: "error",
       message: `Ocurrió un error al realizar la petición de los productos\n\n${err}`,
     });
   }
