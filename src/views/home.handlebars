@@ -1,34 +1,36 @@
-<div class="mt-8">
-  <h1 class="text-4xl text-center font-bold">COURSES</h1>
-  <table class="flex justify-center mt-5 text-lg w-11/12 m-auto">
-    <tr class="bg-blue-200 text-center border-2 border-black">
-      <th class="border-2 border-black">CODE</th>
-      <th class="border-2 border-black">COURSE</th>
-      <th class="border-2 border-black">CATEGORY</th>
-      <th class="border-2 border-black">DESCRIPTION</th>
-      <th class="border-2 border-black px-2">PLACES</th>
-      <th class="border-2 border-black px-2">PRICE</th>
-    </tr>
+<div class="mt-32">
+  <h1 class="text-4xl text-center font-bold bg-blue-300 py-1">COURSES</h1>
+  <main class="flex gap-5 mt-8 mx-auto justify-center">
     {{#each products.docs}}
-      <tr class="text-center border-2 border-black">
-        <td class="border-2 border-black px-2">{{this.code}}</td>
-        <td class="border-2 border-black px-2">{{this.title}}</td>
-        <td class="border-2 border-black px-2">{{this.category}}</td>
-        <td
-          class="border-2 border-black text-start px-2"
-        >{{this.description}}</td>
-        <td class="border-2 border-black px-2">{{this.stock}}</td>
-        <td class="border-2 border-black">${{this.price}}</td>
-      </tr>
+      <article
+        class="flex flex-col text-center bg-blue-50 p-3 gap-2 border-2 border-blue-300 rounded w-3/12"
+      >
+        <h2
+          class="text-2xl pt-2 pb-4 uppercase font-semibold"
+        >{{this.title}}</h2>
+        <p class="text-start text-sm"><b class="font-semibold">code:</b>
+          {{this.code}}</p>
+        <p class="text-center italic mx-3">"{{this.description}}"</p>
+        <p class="text-start"><b class="font-semibold">Category:</b>
+          {{this.category}}</p>
+        <p class="text-start"><b class="font-semibold">Places left:</b>
+          {{this.stock}}</p>
+        <div class="flex items-center mt-3 mb-1">
+          <button
+            class="w-full py-0.5 mr-4 ml-2 text-xl font-semibold rounded bg-gradient-to-r from-cyan-300 to-blue-300 hover:ml-0 hover:mr-2 active:py-1 active:mt-1 transition-all duration-300"
+          >ADD TO CART</button>
+          <p class="text-end font-semibold text-2xl">${{this.price}}</p>
+        </div>
+      </article>
     {{/each}}
-  </table>
+  </main>
 
   <section class="block mt-5 text-2xl">
     <ul class="flex justify-center items-center gap-3">
       {{#if products.hasPrevPage}}
         <li><a
             class="cursor-pointer px-2 pb-1 text-blue-300 rounded-full hover:bg-blue-300 hover:text-white active:bg-blue-400 transition-all duration-300"
-            href="/home?limit={{products.limit}}&page={{products.prevPage}}{{#if sort}}&sort={{sort}}{{/if}}"
+            href="/home?limit={{products.limit}}&page={{products.prevPage}}{{sortQuery}}{{queryQuery}}{{queryPlaces}}"
           >←</a></li>
       {{/if}}
       <li><b class="font-semibold">{{products.page}}</b>
@@ -37,7 +39,7 @@
       {{#if products.hasNextPage}}
         <li><a
             class="cursor-pointer px-2 pb-1 text-blue-300 rounded-full hover:bg-blue-300 hover:text-white active:bg-blue-400 transition-all duration-300"
-            href="/home?limit={{products.limit}}&page={{products.nextPage}}{{#if sort}}&sort={{sort}}{{/if}}"
+            href="/home?limit={{products.limit}}&page={{products.nextPage}}{{sortQuery}}{{queryQuery}}{{queryPlaces}}"
           >→</a></li>
       {{/if}}
     </ul>

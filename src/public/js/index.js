@@ -1,13 +1,10 @@
 const socket = io();
-
 const form = document.getElementById("form");
 const productsTable = document.querySelector("#productsTable");
 const tbody = document.getElementById("tbody");
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  let product = {
+const getFormInputValues = () => {
+  return {
     title: document.querySelector("#title").value,
     description: document.querySelector("#description").value,
     price: document.querySelector("#price").value,
@@ -15,9 +12,14 @@ form.addEventListener("submit", async (e) => {
     category: document.querySelector("#category").value,
     stock: document.querySelector("#stock").value,
   };
+};
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const product = getFormInputValues();
 
   try {
-    const res = await fetch("/dao/products", {
+    const res = await fetch("/api/products", {
       method: "POST",
       body: JSON.stringify(product),
       headers: {
@@ -31,7 +33,7 @@ form.addEventListener("submit", async (e) => {
       throw new Error(result.error);
     }
 
-    await fetch("/dao/products")
+    await fetch("/api/products")
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -53,19 +55,46 @@ form.addEventListener("submit", async (e) => {
     document.querySelector("#category").value = "";
     document.querySelector("#stock").value = "";
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
+});
+
+const createDeleteButton = (productId) => {
+  const button = document.createElement("button");
+  button.textContent = "Delete";
+  button.className = "text-red-500 font-semibold active:text-red-700";
+  button.addEventListener("click", () => deleteProduct(productId));
+  return button;
+};
+
+socket.on("updatedProducts", (products) => {
+  tbody.innerHTML = "";
+  products.docs.forEach((item) => {
+    const tr = document.createElement("tr");
+    tr.className = "text-center border-2 border-black";
+    tr.innerHTML = `
+      <td class="border-2 border-black px-2">${item.code}</td>
+      <td class="border-2 border-black px-2">${item.title}</td>
+      <td class="border-2 border-black px-2">${item.category}</td>
+      <td class="border-2 border-black text-start px-2">${item.description}</td>
+      <td class="border-2 border-black px-2">${item.stock}</td>
+      <td class="border-2 border-black">$${item.price}</td>
+      <td><span class="delete-button-container"></span></td>
+    `;
+    tr.querySelector(".delete-button-container").appendChild(
+      createDeleteButton(item._id)
+    );
+    tbody.appendChild(tr);
+  });
 });
 
 const deleteProduct = async (_id) => {
   try {
     const id = _id.toString();
-    // Send DELETE request to delete the product
-    const deleteResponse = await fetch(`/dao/products/${id}`, {
+    const deleteResponse = await fetch(`/api/products/${id}`, {
       method: "DELETE",
     });
 
-    // Check if the delete request was successful
     if (!deleteResponse.ok) {
       throw new Error(
         `Delete request failed. Status: ${deleteResponse.status}`
@@ -74,15 +103,12 @@ const deleteProduct = async (_id) => {
 
     const deleteResult = await deleteResponse.json();
 
-    // Check if the delete operation on the server was successful
     if (deleteResult.status === "error") {
       throw new Error(deleteResult.error);
     }
 
-    // Fetch the updated product list
-    const fetchResponse = await fetch("/dao/products");
+    const fetchResponse = await fetch("/api/products");
 
-    // Check if the fetch request was successful
     if (!fetchResponse.ok) {
       throw new Error(`Fetch error! Status: ${fetchResponse.status}`);
     }
@@ -90,34 +116,8 @@ const deleteProduct = async (_id) => {
     const jsonResponse = await fetchResponse.json();
     const productsEmit = jsonResponse.payload;
 
-    // Emit the updated product list to the socket
     socket.emit("productList", productsEmit);
   } catch (error) {
     console.error("Error in deleteProduct:", error);
   }
 };
-
-socket.on("updatedProducts", (products) => {
-  console.log(products);
-  tbody.innerHTML = "";
-
-  products.forEach((item) => {
-    const tr = document.createElement("tr");
-    tr.className = "text-center border-2 border-black";
-    tr.innerHTML = `
-    <td class="border-2 border-black px-2">${item.code}</td>
-    <td class="border-2 border-black px-2">${item.title}</td>
-    <td class="border-2 border-black px-2">${item.category}</td>
-    <td
-      class="border-2 border-black text-start px-2"
-    >${item.description}</td>
-    <td class="border-2 border-black px-2">${item.stock}</td>
-    <td class="border-2 border-black">$${item.price}</td>
-    <td><button
-        onclick="deleteProduct('${item._id}')"
-        class="text-red-500 font-semibold active:text-red-700"
-      >Delete</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
-});

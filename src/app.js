@@ -26,8 +26,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/home", viewsRouter);
-app.use("/dao/products", productsRouter);
-app.use("/dao/carts", cartsRouter);
+app.use("/api/products", productsRouter);
+app.use("/api/carts", cartsRouter);
 
 mongoose
   .connect(mongoURL, { dbName: mongoDBName })
@@ -44,6 +44,7 @@ mongoose
       console.log("New client connected");
 
       socket.on("productList", (data) => {
+        console.log("Received 'productList' from client:", data);
         io.emit("updatedProducts", data);
       });
 

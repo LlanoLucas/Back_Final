@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const limit = parseInt(req.query?.limit ?? 10);
+    const limit = parseInt(req.query?.limit ?? 100);
 
     const result = await ProductsModel.paginate(
       {},
@@ -35,17 +35,7 @@ router.get("/:pid", async (req, res) => {
     }
 
     let product = await ProductsModel.findById(pId).lean().exec();
-    // .exec((err, product) => {
-    //   if (err) {
-    //     console.error(`Error buscando el producto por ID: ${err}`);
-    //   } else {
-    //     if (product) {
-    //       res.json({ status: "success", payload: product });
-    //     } else {
-    //       console.log("Producto no encontrado");
-    //     }
-    //   }
-    // });
+
     if (!product) {
       console.error("Producto no encontrado");
     }
