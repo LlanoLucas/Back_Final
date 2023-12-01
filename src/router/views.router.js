@@ -68,7 +68,11 @@ router.get("/carts/:cid", async (req, res) => {
       product.totalPrice = product.quantity * product.product.price;
     });
 
-    res.render("carts", { cart });
+    const grandTotal = cart.products.reduce((total, product) => {
+      return total + (product.totalPrice || 0); // Ensure product.totalPrice is defined
+    }, 0);
+
+    res.render("carts", { cart, grandTotal });
   } catch (error) {
     res.status(500).json({ error: "Error Interno del Servidor" });
   }

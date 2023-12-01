@@ -1,29 +1,49 @@
 <div class="mt-32">
-  <h1 class="text-4xl text-center font-bold bg-blue-300 py-1 w-full">CART</h1>
+  <h1
+    class="text-4xl text-center font-bold bg-blue-300 py-1 w-full border-y-2 border-blue-500"
+  >CART</h1>
   <main class="flex flex-col mt-8 mx-auto justify-center items-center">
-    {{#each cart.products}}
-      <article
-        class="flex justify-between items-center py-3 px-8 border-b border-blue-300 w-1/3"
-      >
-        <div>
-          <h2
-            class="text-2xl uppercase font-semibold"
-          >{{this.product.title}}</h2>
-          <p class="text-start"><b class="font-semibold">Places left:</b>
-            {{this.product.stock}}</p>
-        </div>
-        <div>
-          <div class="flex gap-1 items-center justify-end">
-            <p class="text-start">{{this.quantity}}
-              x
-              <span
-                class="text-start font-semibold"
-              >${{this.product.price}}</span></p>
+    <section class="flex flex-col bg-blue-100 w-1/3 rounded-md p-2 gap-2">
+      {{#each cart.products}}
+        <article
+          class="flex justify-between items-center py-3 px-5 rounded bg-blue-50 w-full"
+        >
+          <div>
+            <h2
+              class="text-2xl uppercase font-semibold"
+            >{{this.product.title}}</h2>
+            <p class="text-start"><b class="font-semibold">Places left:</b>
+              {{this.product.stock}}</p>
           </div>
-          <p class="text-2xl font-bold">${{this.totalPrice}}</p>
-        </div>
-      </article>
-    {{/each}}
+          <div>
+            <div class="flex gap-1 items-center justify-end">
+              <p class="text-start">{{this.quantity}}
+                x
+                <span
+                  class="text-start font-semibold"
+                >${{this.product.price}}</span></p>
+            </div>
+            <p class="text-2xl font-bold subtotals">${{this.totalPrice}}</p>
+          </div>
+        </article>
+      {{/each}}
+    </section>
+
+    <div
+      class="flex w-1/3 text-2xl px-6 justify-between gap-5 items-center mt-5 border-b border-blue-400 pb-2"
+    >
+      <p class="font-semibold">GRAND TOTAL</p>
+      <strong>${{grandTotal}}</strong>
+    </div>
+
+    <a
+      href="#"
+      class="w-1/3 mt-4 mb-5 text-center border-2 bg-blue-200 border-blue-400 py-0.5 text-xl font-semibold rounded hover:bg-blue-300 hover:border-blue-500 active:scale-95 transition-all duration-300"
+    >PROCEED TO CHECKOUT</a>
   </main>
 
 </div>
+
+<script>
+  let total = cart.forEach((products) => products.totalPrice);
+</script>
