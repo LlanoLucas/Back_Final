@@ -5,8 +5,21 @@ import CartsModel from "../dao/models/carts.models.js";
 
 const router = Router();
 
+function hasSession(req, res, next) {
+  if (req.session?.user) return res.redirect("/home/profile");
+
+  return next();
+}
+
+function auth(req, res, next) {
+  if (req.session?.user) return next();
+
+  res.redirect("/home/login");
+}
+
 router.get("/", async (req, res) => {
   const { limit = 3, page = 1, sort, query, places } = req.query;
+  const user = req.session.user;
 
   const sortOptions = sort ? { price: sort } : {};
   const sortQuery = sort ? `&sort=${sort}` : "";
@@ -28,7 +41,7 @@ router.get("/", async (req, res) => {
   if (places && places === "true") queryConditions.stock = { $gt: 0 };
   try {
     const products = await ProductsModel.paginate(queryConditions, options);
-    res.render("home", { products, sortQuery, queryQuery, queryPlaces });
+    res.render("home", { products, sortQuery, queryQuery, queryPlaces, user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error Interno del Servidor" });
@@ -86,6 +99,21 @@ router.get("/chat", async (req, res) => {
     console.log(err);
     res.status(500).json({ status: "error", error: err.message });
   }
+});
+
+router.get("/login", hasSession, (req, res) => {
+  return res.render("login", {});
+});
+
+router.get("/register", hasSession, (req, res) => {
+  return res.render("register", {});
+});
+
+router.get("/profile", auth, (req, res) => {
+  const user = req.session.user;
+
+  console.log(user);
+  res.render("profile", { user });
 });
 
 export default router;

@@ -1,0 +1,71 @@
+<div
+  class="rounded px-6 py-3 bg-blue-100 w-max mt-12 mx-auto border-2 border-black"
+>
+  <h1 class="text-center text-2xl font-bold">REGISTER</h1>
+  <div class="mt-5 flex justify-center items-center">
+    <form action="/session/register" method="POST" class="mb-2">
+      <div class="mb-2 flex justify-between">
+        <label
+          for="name"
+          class="form-label w-28 text-center rounded-sm border-2 border-black"
+        >Name:</label>
+        <input
+          id="first_name"
+          type="text"
+          class="form-control bg-blue-100 border-b-2 border-blue-300 focus:outline-none focus:border-blue-400 ease-in-out"
+          name="first_name"
+          required
+        />
+      </div>
+      <div class="mb-2 flex justify-between">
+        <label
+          for="last_name"
+          class="form-label w-28 text-center rounded-sm border-2 border-black"
+        >Last Name:</label>
+        <input
+          id="last_name"
+          type="text"
+          class="form-control bg-blue-100 border-b-2 border-blue-300 focus:outline-none focus:border-blue-400 ease-in-out"
+          name="last_name"
+          required
+        />
+      </div>
+      <div class="mb-2 flex justify-between">
+        <label
+          for="email"
+          class="form-label w-28 text-center rounded-sm border-2 border-black"
+        >Email:</label>
+        <input
+          autocomplete="off"
+          id="email"
+          type="text"
+          class="form-control bg-blue-100 border-b-2 border-blue-300 focus:outline-none focus:border-blue-400 ease-in-out"
+          name="email"
+          required
+        />
+      </div>
+      <div class="mb-2 flex justify-between gap-3">
+        <label
+          for="password"
+          class="form-label w-28 text-center rounded-sm border-2 border-black"
+        >Password:</label>
+        <input
+          id="password"
+          type="password"
+          class="form-control bg-blue-100 border-b-2 border-blue-300 focus:outline-none focus:border-blue-400 ease-in-out"
+          name="password"
+          required
+        />
+      </div>
+      <button
+        type="submit"
+        class="form-control text-lg mt-1 bg-blue-200 font-semibold rounded-sm border-2 border-black px-1 py-.5 w-full hover:bg-blue-50 active:bg-blue-200 transition-all duration-300"
+      >Sign Up</button>
+    </form>
+  </div>
+  <div class="text-center">
+    <p class="italic">Already have an account?
+      <a href="/home/login" class="font-semibold italic hover:underline">Sign
+        In!</a></p>
+  </div>
+</div>
