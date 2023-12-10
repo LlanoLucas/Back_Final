@@ -55,7 +55,7 @@ router.post("/register", async (req, res) => {
 router.get("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) return res.send("Logout error");
-
+    res.clearCookie("connect.sid");
     return res.redirect("/home/login");
   });
 });
