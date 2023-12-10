@@ -38,7 +38,11 @@ app.set("views", `${__dirname}/views`);
 app.set("view engine", "handlebars");
 
 app.get("/", (req, res) => {
-  res.render("index", { name: "Juan" });
+  res.render("login");
+});
+
+app.get("/index", (req, res) => {
+  res.render("index");
 });
 
 app.use("/home", viewsRouter);

@@ -112,7 +112,6 @@ router.get("/register", hasSession, (req, res) => {
 router.get("/profile", auth, (req, res) => {
   const user = req.session.user;
 
-  console.log(user);
   res.render("profile", { user });
 });
 
