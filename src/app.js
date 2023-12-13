@@ -1,16 +1,19 @@
+import { PORT } from "./utils.js";
+import __dirname from "./utils.js";
+import { Server } from "socket.io";
+
 import express from "express";
 import mongoose from "mongoose";
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import { PORT } from "./utils.js";
-import __dirname from "./utils.js";
 import handlebars from "express-handlebars";
-import { Server } from "socket.io";
+import passport from "passport";
+
+import MessageModel from "./dao/models/messages.models.js";
 import productsRouter from "./router/products.router.js";
 import cartsRouter from "./router/carts.router.js";
 import sessionRouter from "./router/session.router.js";
 import viewsRouter from "./router/views.router.js";
-import MessageModel from "./dao/models/messages.models.js";
 
 const app = express();
 app.use(express.static(`${__dirname}/public`));
@@ -37,15 +40,15 @@ app.engine("handlebars", handlebars.engine());
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "handlebars");
 
-app.get("/", (req, res) => {
-  res.render("login");
-});
+// app.get("/", (req, res) => {
+//   res.render("login");
+// });
 
 app.get("/index", (req, res) => {
   res.render("index");
 });
 
-app.use("/home", viewsRouter);
+app.use("/", viewsRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/session", sessionRouter);

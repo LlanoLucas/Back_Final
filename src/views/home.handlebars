@@ -1,11 +1,10 @@
-<div class="flex justify-center">
-  <p class="w-full text-center text-2xl font-semibold mt-5">Welcome
-    {{user.role}}
+<div class="flex justify-center gap-2 items-center mt-5">
+  <span
+    class="px-1 rounded border-2 border-black bg-blue-300 text-lg form-control text-lg font-semibold"
+  >{{user.role}}</span>
+  <p class="text-2xl font-semibold">Welcome
     {{user.first_name}}!</p>
-  <a
-    href="/session/logout"
-    class="right-3 mt-2 absolute px-4 py-2 text-lg form-control text-lg mt-1 bg-blue-200 font-semibold rounded-sm border-2 border-black px-1 py-.5 hover:bg-blue-50 active:bg-blue-200 transition-all duration-300"
-  >Logout</a>
+
 </div>
 
 <div class="mt-20">

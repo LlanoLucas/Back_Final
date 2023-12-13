@@ -6,7 +6,7 @@ import CartsModel from "../dao/models/carts.models.js";
 const router = Router();
 
 function hasSession(req, res, next) {
-  if (req.session?.user) return res.redirect("/home/profile");
+  if (req.session?.user) return res.redirect("/profile");
 
   return next();
 }
@@ -14,10 +14,10 @@ function hasSession(req, res, next) {
 function auth(req, res, next) {
   if (req.session?.user) return next();
 
-  res.redirect("/home/login");
+  res.redirect("/");
 }
 
-router.get("/", async (req, res) => {
+router.get("/home", async (req, res) => {
   const { limit = 3, page = 1, sort, query, places } = req.query;
   const user = req.session.user;
 
@@ -101,7 +101,7 @@ router.get("/chat", async (req, res) => {
   }
 });
 
-router.get("/login", hasSession, (req, res) => {
+router.get("/", hasSession, (req, res) => {
   return res.render("login", {});
 });
 
