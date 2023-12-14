@@ -23,7 +23,7 @@ export const initializePassport = () => {
           req.body.password = createHash(password);
           const newUser = await UserModel.create({ ...req.body });
 
-          if (newUser) done(null, newUser);
+          if (newUser) return done(null, newUser);
 
           return done(null, false);
         } catch (error) {

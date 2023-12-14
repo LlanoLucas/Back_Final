@@ -9,7 +9,7 @@ const router = Router();
 router.post(
   "/login",
   passport.authenticate("login", { failureRedirect: "/login" }),
-  (req, res) => {
+  async (req, res) => {
     if (!req.user) return res.redirect("/login");
 
     req.session.user = {
@@ -28,7 +28,6 @@ router.post(
   passport.authenticate("register", {
     failureRedirect: "/register",
     successRedirect: "/login",
-    failureFlash: true,
   })
 );
 
