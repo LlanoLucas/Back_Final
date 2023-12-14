@@ -1,9 +1,75 @@
 import passport from "passport";
-import UserModel from "../models/user.model.js";
+import UserModel from "../dao/models/users.models.js";
 import GitHubStrategy from "passport-github2";
+import local from "passport-local";
+import { createHash, isValidPassword } from "../utils/bcrypt.password.js";
 
-const initializePassport = () => {
+const LocalStrategy = local.Strategy;
+
+export const initializePassport = () => {
   passport.use(
+    "register",
+    new LocalStrategy(
+      { passReqToCallback: true, usernameField: "email" },
+      async (req, username, password, done) => {
+        try {
+          const user = await UserModel.findOne({ email: username });
+
+          if (user) {
+            console.log("User already registered");
+            done(null, false);
+          }
+
+          req.body.password = createHash(password);
+          const newUser = await UserModel.create({ ...req.body });
+
+          if (newUser) done(null, newUser);
+
+          return done(null, false);
+        } catch (error) {
+          return done(error);
+        }
+      }
+    )
+  );
+
+  passport.use(
+    "login",
+    new LocalStrategy(
+      { usernameField: "email" },
+      async (username, password, done) => {
+        try {
+          const user = await UserModel.findOne({ email: username });
+
+          if (!user) {
+            console.log("User not found");
+            done(null, false);
+          }
+
+          if (!isValidPassword(password, user.password)) {
+            console.log("Password is not valid");
+            done(null, false);
+          }
+
+          return done(null, user);
+        } catch (error) {
+          return done(error);
+        }
+      }
+    )
+  );
+
+  passport.serializeUser((user, done) => {
+    done(null, user._id);
+  });
+
+  passport.deserializeUser(async (id, done) => {
+    const user = await UserModel.findById(id);
+    done(null, user);
+  });
+};
+
+/* passport.use(
     "github",
     new GitHubStrategy(
       {
@@ -34,16 +100,4 @@ const initializePassport = () => {
         }
       }
     )
-  );
-
-  passport.serializeUser((user, done) => {
-    done(null, user._id);
-  });
-
-  passport.deserializeUser(async (id, done) => {
-    const user = await UserModel.findById(id);
-    done(null, user);
-  });
-};
-
-export default initializePassport;
+  ); */

@@ -1,59 +1,36 @@
 import { Router } from "express";
 import UserModel from "../dao/models/users.models.js";
+import { initializePassport } from "../config/passport.config.js";
 import { createHash, isValidPassword } from "../utils/bcrypt.password.js";
+import passport from "passport";
 
 const router = Router();
 
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+router.post(
+  "/login",
+  passport.authenticate("login", { failureRedirect: "/login" }),
+  (req, res) => {
+    if (!req.user) return res.redirect("/login");
 
-  if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
-    const user = {
-      first_name: "Coder",
-      last_name: "Admin",
-      email: "adminCoder@coder.com",
-      password: "adminCod3r123",
-      role: "admin",
-      status: true,
-      dateCreated: new Date(),
+    req.session.user = {
+      first_name: req.user.first_name,
+      last_name: req.user.last_name,
+      email: req.user.email,
+      role: req.user.role,
     };
-    req.session.user = user;
-    req.session.role = user.role;
-    return res.redirect("/home");
+
+    return res.redirect("/");
   }
+);
 
-  const user = await UserModel.findOne({ email });
-
-  if (user && isValidPassword(password, user.password)) {
-    req.session.user = user;
-    req.session.role = user.role;
-    return res.redirect("/home");
-  }
-
-  return res.redirect("/");
-});
-
-router.post("/register", async (req, res) => {
-  const data = req.body;
-  try {
-    data.password = createHash(data.password);
-
-    const user = await UserModel.create({ ...data });
-
-    if (user) {
-      req.session.user = user;
-      req.session.role = user.role;
-      return res.redirect("/");
-    }
-
-    return res.redirect("/register");
-  } catch (err) {
-    res.status(500).json({
-      status: "error",
-      message: `Ocurrió un error al registrar al usuario... (${err})`,
-    });
-  }
-});
+router.post(
+  "/register",
+  passport.authenticate("register", {
+    failureRedirect: "/register",
+    successRedirect: "/login",
+    failureFlash: true,
+  })
+);
 
 router.get("/logout", (req, res) => {
   req.session.destroy((err) => {

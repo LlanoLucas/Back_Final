@@ -8,6 +8,7 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import handlebars from "express-handlebars";
 import passport from "passport";
+import { initializePassport } from "./config/passport.config.js";
 
 import MessageModel from "./dao/models/messages.models.js";
 import productsRouter from "./router/products.router.js";
@@ -36,16 +37,17 @@ app.use(
   })
 );
 
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.engine("handlebars", handlebars.engine());
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "handlebars");
 
-// app.get("/", (req, res) => {
-//   res.render("login");
-// });
-
-app.get("/index", (req, res) => {
-  res.render("index");
+app.get("/navigation", (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+  res.render("navigation");
 });
 
 app.use("/", viewsRouter);

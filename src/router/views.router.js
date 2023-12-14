@@ -14,10 +14,12 @@ function hasSession(req, res, next) {
 function auth(req, res, next) {
   if (req.session?.user) return next();
 
-  res.redirect("/");
+  res.redirect("/login");
 }
 
-router.get("/home", async (req, res) => {
+router.get("/", async (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
   const { limit = 3, page = 1, sort, query, places } = req.query;
   const user = req.session.user;
 
@@ -49,6 +51,8 @@ router.get("/home", async (req, res) => {
 });
 
 router.get("/realTimeProducts", async (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
   const { query, sort } = req.query;
 
   try {
@@ -71,6 +75,8 @@ router.get("/realTimeProducts", async (req, res) => {
 });
 
 router.get("/carts/:cid", async (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
   try {
     const cid = req.params.cid;
 
@@ -92,6 +98,8 @@ router.get("/carts/:cid", async (req, res) => {
 });
 
 router.get("/chat", async (req, res) => {
+  if (!req.session.user) return res.redirect("/login");
+
   try {
     const messages = await MessageModel.find().lean().exec();
     res.render("chat", { messages });
@@ -101,7 +109,7 @@ router.get("/chat", async (req, res) => {
   }
 });
 
-router.get("/", hasSession, (req, res) => {
+router.get("/login", hasSession, (req, res) => {
   return res.render("login", {});
 });
 
