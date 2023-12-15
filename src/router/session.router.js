@@ -10,8 +10,6 @@ router.post(
   "/login",
   passport.authenticate("login", { failureRedirect: "/login" }),
   async (req, res) => {
-    if (!req.user) return res.redirect("/login");
-
     req.session.user = {
       first_name: req.user.first_name,
       last_name: req.user.last_name,

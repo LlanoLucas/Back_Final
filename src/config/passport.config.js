@@ -15,9 +15,16 @@ export const initializePassport = () => {
         try {
           const user = await UserModel.findOne({ email: username });
 
+          const { confirmPassword } = req.body;
+
+          if (password !== confirmPassword) {
+            console.log("Passwords do not match");
+            return done(null, false);
+          }
+
           if (user) {
             console.log("User already registered");
-            done(null, false);
+            return done(null, false);
           }
 
           req.body.password = createHash(password);
@@ -67,23 +74,20 @@ export const initializePassport = () => {
     const user = await UserModel.findById(id);
     done(null, user);
   });
-};
 
-/* passport.use(
+  passport.use(
     "github",
     new GitHubStrategy(
       {
-        clientID: "Iv1.f16ee1054cef2024",
-        clientSecret: "a3a49a21d0f704a23dae5a0591cbf393b36cefd5",
-        callbackURL: "http://127.0.0.1:8080/githubcallback",
+        clientID: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+        callbackURL: process.env.CALLBACK_URL,
       },
       async (accessToken, refreshToken, profile, done) => {
-        console.log(profile);
-
         try {
           const user = await UserModel.findOne({ email: profile._json.email });
           if (user) {
-            console.log("Ya se encuentra registrado");
+            console.log("User already registered");
             return done(null, user);
           }
 
@@ -91,7 +95,9 @@ export const initializePassport = () => {
             first_name: profile._json.name,
             last_name: "",
             email: profile._json.email,
-            password: "",
+            password: createHash("githubpassword"),
+            image: profile._json.avatar_url,
+            github: true,
           });
 
           return done(null, newUser);
@@ -100,4 +106,5 @@ export const initializePassport = () => {
         }
       }
     )
-  ); */
+  );
+};

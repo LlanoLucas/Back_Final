@@ -1,6 +1,8 @@
 import { PORT } from "./utils.js";
 import __dirname from "./utils.js";
 import { Server } from "socket.io";
+import dotenv from "dotenv";
+dotenv.config();
 
 import express from "express";
 import mongoose from "mongoose";
@@ -21,8 +23,7 @@ app.use(express.static(`${__dirname}/public`));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const mongoURL =
-  "mongodb+srv://lll04:mycoderhouseproject@clusterbackend.eksdwt8.mongodb.net/";
+const mongoURL = process.env.MONGODB_URL;
 const mongoDBName = "cluster_backend";
 
 app.use(
@@ -34,6 +35,7 @@ app.use(
     secret: "s3cre3tK3y",
     resave: true,
     saveUninitialized: true,
+    ttl: 60 * 60,
   })
 );
 
