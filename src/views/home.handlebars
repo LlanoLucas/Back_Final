@@ -41,7 +41,7 @@
       {{#if products.hasPrevPage}}
         <li><a
             class="cursor-pointer px-2 pb-1 text-blue-300 rounded-full hover:bg-blue-300 hover:text-white active:bg-blue-400 transition-all duration-300"
-            href="/home?limit={{products.limit}}&page={{products.prevPage}}{{sortQuery}}{{queryQuery}}{{queryPlaces}}"
+            href="/?limit={{products.limit}}&page={{products.prevPage}}{{sortQuery}}{{queryQuery}}{{queryPlaces}}"
           >←</a></li>
       {{/if}}
       <li><b class="font-semibold">{{products.page}}</b>
@@ -50,7 +50,7 @@
       {{#if products.hasNextPage}}
         <li><a
             class="cursor-pointer px-2 pb-1 text-blue-300 rounded-full hover:bg-blue-300 hover:text-white active:bg-blue-400 transition-all duration-300"
-            href="/home?limit={{products.limit}}&page={{products.nextPage}}{{sortQuery}}{{queryQuery}}{{queryPlaces}}"
+            href="/?limit={{products.limit}}&page={{products.nextPage}}{{sortQuery}}{{queryQuery}}{{queryPlaces}}"
           >→</a></li>
       {{/if}}
     </ul>

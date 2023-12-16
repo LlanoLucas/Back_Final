@@ -2,7 +2,6 @@ import { PORT } from "./utils.js";
 import __dirname from "./utils.js";
 import { Server } from "socket.io";
 import dotenv from "dotenv";
-dotenv.config();
 
 import express from "express";
 import mongoose from "mongoose";
@@ -18,13 +17,15 @@ import cartsRouter from "./router/carts.router.js";
 import sessionRouter from "./router/session.router.js";
 import viewsRouter from "./router/views.router.js";
 
+dotenv.config();
+
 const app = express();
 app.use(express.static(`${__dirname}/public`));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const mongoURL = process.env.MONGODB_URL;
-const mongoDBName = "cluster_backend";
+const mongoDBName = process.env.MONGODB_NAME;
 
 app.use(
   session({
@@ -32,7 +33,7 @@ app.use(
       mongoUrl: mongoURL,
       dbName: mongoDBName,
     }),
-    secret: "s3cre3tK3y",
+    secret: process.env.SESSION_KEY,
     resave: true,
     saveUninitialized: true,
     ttl: 60 * 60,

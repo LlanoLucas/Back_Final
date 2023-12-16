@@ -120,7 +120,6 @@ router.get("/register", hasSession, (req, res) => {
 
 router.get("/profile", auth, (req, res) => {
   const user = req.session.user;
-
   res.render("profile", { user });
 });
 
@@ -142,6 +141,7 @@ router.get(
       first_name: req.user.first_name,
       last_name: req.user.last_name,
       email: req.user.email,
+      image: req.user.image,
       role: req.user.role,
     };
 

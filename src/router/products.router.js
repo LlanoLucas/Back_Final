@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const limit = parseInt(req.query?.limit ?? 100);
+    const limit = parseInt(req.query?.limit ?? 50);
 
     const result = await ProductsModel.paginate(
       {},
@@ -113,7 +113,6 @@ router.delete("/:pid", async (req, res) => {
   try {
     const productId = new mongoose.Types.ObjectId(req.params.pid);
 
-    // Check if productId is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(req.params.pid)) {
       return res.status(400).json({ error: "Invalid ObjectId" });
     }

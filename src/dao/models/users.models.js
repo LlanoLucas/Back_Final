@@ -15,7 +15,10 @@ const UserModel = mongoose.model(
       type: String,
       required: [true, "You have to create a password"],
     },
-    image: { type: String },
+    image: {
+      type: String,
+      default: "https://static.thenounproject.com/png/5034901-200.png",
+    },
     role: { type: String, default: "user", enum: ["admin", "user"] },
     status: { type: Boolean, default: true },
     dateCreaeted: { type: Date, default: Date.now },
