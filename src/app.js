@@ -5,11 +5,11 @@ import dotenv from "dotenv";
 
 import express from "express";
 import mongoose from "mongoose";
-import session from "express-session";
-import MongoStore from "connect-mongo";
 import handlebars from "express-handlebars";
+import session from "express-session";
 import passport from "passport";
 import { initializePassport } from "./config/passport.config.js";
+import cookieParser from "cookie-parser";
 
 import MessageModel from "./dao/models/messages.models.js";
 import productsRouter from "./router/products.router.js";
@@ -27,20 +27,21 @@ app.use(express.urlencoded({ extended: true }));
 const mongoURL = process.env.MONGODB_URL;
 const mongoDBName = process.env.MONGODB_NAME;
 
+app.use(cookieParser());
+
 app.use(
   session({
-    store: MongoStore.create({
-      mongoUrl: mongoURL,
-      dbName: mongoDBName,
-    }),
     secret: process.env.SESSION_KEY,
-    resave: true,
-    saveUninitialized: true,
-    ttl: 60 * 60,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 3600000,
+    },
   })
 );
 
 initializePassport();
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -49,14 +50,14 @@ app.set("views", `${__dirname}/views`);
 app.set("view engine", "handlebars");
 
 app.get("/navigation", (req, res) => {
-  if (!req.session.user) return res.redirect("/login");
+  if (!req.cookies.jwt) return res.redirect("/login");
   res.render("navigation");
 });
 
 app.use("/", viewsRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
-app.use("/session", sessionRouter);
+app.use("/api/session", sessionRouter);
 
 mongoose
   .connect(mongoURL, { dbName: mongoDBName })

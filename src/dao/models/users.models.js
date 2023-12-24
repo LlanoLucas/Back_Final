@@ -11,6 +11,7 @@ const UserModel = mongoose.model(
       index: true,
       required: [true, "Your email is required"],
     },
+    age: Number,
     password: {
       type: String,
       required: [true, "You have to create a password"],
@@ -19,6 +20,7 @@ const UserModel = mongoose.model(
       type: String,
       default: "https://static.thenounproject.com/png/5034901-200.png",
     },
+    cart: mongoose.Schema.Types.ObjectId,
     role: { type: String, default: "user", enum: ["admin", "user"] },
     status: { type: Boolean, default: true },
     dateCreaeted: { type: Date, default: Date.now },
