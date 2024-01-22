@@ -11,10 +11,10 @@ import {
   profile,
   callBack,
 } from "../controller/views.controller.js";
+import { CartsRepository } from "../repositories/index.js";
 
 const router = Router();
 
-// Middleware to check if a token is missing and redirect to login
 function hasToken(req, res, next) {
   if (req.cookies.jwt) return next();
   res.redirect("/login");
@@ -25,7 +25,6 @@ function auth(req, res, next) {
   res.redirect("/profile");
 }
 
-// Middleware to verify and decode the JWT token
 function verifyJWT(req, res, next) {
   const jwtCookie = req.cookies.jwt;
 
@@ -42,7 +41,6 @@ function verifyJWT(req, res, next) {
   }
 }
 
-// Route to render the home page
 router.get(
   "/",
   hasToken,
@@ -50,7 +48,6 @@ router.get(
   home
 );
 
-// Route to render real-time products
 router.get(
   "/realTimeProducts",
   hasToken,
@@ -58,19 +55,14 @@ router.get(
   realTimeProducts
 );
 
-// Route to render carts
 router.get("/carts/:cid", hasToken, verifyJWT, carts);
 
-// Route to render the chat page
 router.get("/chat", hasToken, verifyJWT, chat);
 
-// Route to render the login page
 router.get("/login", auth, login);
 
-// Route to render the register page
 router.get("/register", auth, register);
 
-// Route to render the profile page
 router.get(
   "/profile",
   hasToken,
@@ -78,14 +70,12 @@ router.get(
   profile
 );
 
-// Route to authenticate with GitHub
 router.get(
   "/github",
   passport.authenticate("github", { scope: ["user:email"] }),
   async (req, res) => {}
 );
 
-// Route for GitHub callback
 router.get(
   "/githubcallback",
   passport.authenticate("github", {

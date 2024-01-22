@@ -3,7 +3,7 @@ import {
   getProducts,
   getProduct,
   addProduct,
-  modifyProduct,
+  updateProduct,
   deleteProduct,
 } from "../controller/products.controller.js";
 
@@ -12,15 +12,9 @@ const router = Router();
 router.get("/", getProducts);
 router.get("/:pid", getProduct);
 
-//---------------------------------------------------------------------
-
 router.post("/", addProduct);
 
-//---------------------------------------------------------------------
-
-router.put("/:pid", modifyProduct);
-
-//---------------------------------------------------------------------
+router.put("/:pid", updateProduct);
 
 router.delete("/:pid", deleteProduct);
 

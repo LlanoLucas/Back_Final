@@ -1,5 +1,5 @@
 import passport from "passport";
-import UserModel from "../dao/models/users.models.js";
+import UserModel from "../dao/mongo/models/users.model.js";
 import GitHubStrategy from "passport-github2";
 import local from "passport-local";
 import { createHash, isValidPassword } from "../utils/bcrypt.password.js";

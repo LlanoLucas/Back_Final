@@ -1,25 +1,33 @@
-import ProductsModel from "../dao/models/products.models.js";
+import ProductsModel from "../dao/mongo/models/products.model.js";
 import mongoose from "mongoose";
+import { ProductsRepository } from "../repositories/index.js";
 
 export const getProducts = async (req, res) => {
   try {
-    const limit = parseInt(req.query?.limit ?? 50);
+    const { limit = 3, page = 1, sort, query, places } = req.query;
 
-    const result = await ProductsModel.paginate(
-      {},
-      {
-        page: 1,
-        limit: limit,
-        lean: true,
-      }
-    );
+    const sortOptions = sort ? { price: sort } : {};
 
-    res.json({ status: "success", payload: result });
-  } catch (err) {
-    res.status(500).json({
-      status: "error",
-      message: `Ocurrió un error al realizar la petición de los productos\n\n${err}`,
-    });
+    const options = {
+      page,
+      limit,
+      lean: true,
+      sort: sortOptions,
+    };
+
+    const queryConditions = {};
+    if (query) {
+      queryConditions.category = query.charAt(0).toUpperCase() + query.slice(1);
+    }
+
+    if (places && places === "true") queryConditions.stock = { $gt: 0 };
+
+    const products = await ProductsModel.paginate(queryConditions, options);
+
+    res.json({ status: "success", payload: products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -31,7 +39,7 @@ export const getProduct = async (req, res) => {
       return res.status(400).json({ error: "Invalid ObjectId" });
     }
 
-    let product = await ProductsModel.findById(pId).lean().exec();
+    let product = await ProductsRepository.getProduct(pId);
 
     if (!product) {
       console.error("Producto no encontrado");
@@ -69,7 +77,7 @@ export const addProduct = async (req, res) => {
       status: status === "true",
     };
 
-    const addedProduct = await ProductsModel.create(productToAdd);
+    const addedProduct = await ProductsRepository.addProduct(productToAdd);
 
     return res.status(201).json({
       message: `Producto (ID: ${addedProduct._id}) añadido exitosamente`,
@@ -80,7 +88,7 @@ export const addProduct = async (req, res) => {
   }
 };
 
-export const modifyProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
   try {
     const productId = new mongoose.Types.ObjectId(req.params.pid);
     const { id, ...updated } = req.body;
@@ -91,10 +99,9 @@ export const modifyProduct = async (req, res) => {
         .json({ error: "No se puede modificar el ID del producto" });
     }
 
-    const updatedProduct = await ProductsModel.findByIdAndUpdate(
+    const updatedProduct = await ProductsRepository.updateProduct(
       productId,
-      updated,
-      { new: true }
+      updated
     );
 
     res.status(200).json({
@@ -114,7 +121,7 @@ export const deleteProduct = async (req, res) => {
       return res.status(400).json({ error: "Invalid ObjectId" });
     }
 
-    const deletedProduct = await ProductsModel.findByIdAndDelete(productId);
+    const deletedProduct = await ProductsRepository.deleteProduct(productId);
 
     if (!deletedProduct) {
       res.status(404).json({

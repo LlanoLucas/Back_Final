@@ -1,6 +1,7 @@
-import ProductsModel from "../dao/models/products.models.js";
-import MessageModel from "../dao/models/messages.models.js";
-import CartsModel from "../dao/models/carts.models.js";
+import ProductsModel from "../dao/mongo/models/products.model.js";
+import MessageModel from "../dao/mongo/models/messages.model.js";
+import jwt from "jsonwebtoken";
+import { CartsRepository } from "../repositories/index.js";
 
 export const home = async (req, res) => {
   const { limit = 3, page = 1, sort, query, places } = req.query;
@@ -64,7 +65,7 @@ export const realTimeProducts = async (req, res) => {
 export const carts = async (req, res) => {
   try {
     const cid = req.params.cid;
-    const cart = await CartsModel.findOne({ _id: cid }).lean().exec();
+    const cart = await CartsRepository.getCart(cid);
 
     if (!cart) return res.status(404).json({ error: "Cart not found" });
 

@@ -11,7 +11,7 @@ import passport from "passport";
 import { initializePassport } from "./config/passport.config.js";
 import cookieParser from "cookie-parser";
 
-import MessageModel from "./dao/models/messages.models.js";
+import MessageModel from "./dao/mongo/models/messages.model.js";
 import productsRouter from "./router/products.router.js";
 import cartsRouter from "./router/carts.router.js";
 import sessionRouter from "./router/session.router.js";
