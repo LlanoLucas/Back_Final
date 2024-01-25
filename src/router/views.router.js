@@ -11,35 +11,12 @@ import {
   profile,
   callBack,
 } from "../controller/views.controller.js";
+import { hasToken, auth, verifyJWT } from "../middlewares/jwt.middleware.js";
+import { current } from "../middlewares/current.middleware.js";
 import { CartsRepository } from "../repositories/index.js";
+import UserDTO from "../dto/users.dto.js";
 
 const router = Router();
-
-function hasToken(req, res, next) {
-  if (req.cookies.jwt) return next();
-  res.redirect("/login");
-}
-
-function auth(req, res, next) {
-  if (!req.cookies.jwt) return next();
-  res.redirect("/profile");
-}
-
-function verifyJWT(req, res, next) {
-  const jwtCookie = req.cookies.jwt;
-
-  try {
-    const decodedToken = jwt.verify(jwtCookie, process.env.JWT_SECRET);
-    req.user = {
-      sub: decodedToken.sub,
-      ...decodedToken.user,
-    };
-    next();
-  } catch (error) {
-    console.log("Token verification failed:", error.message);
-    res.status(401).json({ message: "Token verification failed" });
-  }
-}
 
 router.get(
   "/",
@@ -52,12 +29,13 @@ router.get(
   "/realTimeProducts",
   hasToken,
   passport.authenticate("jwt", { session: false }),
+  current("admin"),
   realTimeProducts
 );
 
-router.get("/carts/:cid", hasToken, verifyJWT, carts);
+router.get("/cart/:cid", hasToken, verifyJWT, carts);
 
-router.get("/chat", hasToken, verifyJWT, chat);
+router.get("/chat", hasToken, verifyJWT, current("user"), chat);
 
 router.get("/login", auth, login);
 

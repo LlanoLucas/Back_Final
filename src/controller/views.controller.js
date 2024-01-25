@@ -2,6 +2,7 @@ import ProductsModel from "../dao/mongo/models/products.model.js";
 import MessageModel from "../dao/mongo/models/messages.model.js";
 import jwt from "jsonwebtoken";
 import { CartsRepository } from "../repositories/index.js";
+import UserDTO from "../dto/users.dto.js";
 
 export const home = async (req, res) => {
   const { limit = 3, page = 1, sort, query, places } = req.query;
@@ -102,7 +103,7 @@ export const register = (req, res) => {
 };
 
 export const profile = (req, res) => {
-  return res.render("profile", { user: req.user.user });
+  return res.render("profile", { user: new UserDTO(req.user.user) });
 };
 
 export const callBack = async (req, res) => {

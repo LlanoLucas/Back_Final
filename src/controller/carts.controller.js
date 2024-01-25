@@ -4,7 +4,7 @@ import { CartsRepository } from "../repositories/index.js";
 export const getCarts = async (req, res) => {
   try {
     const carts = await CartsRepository.getCarts();
-    res.status(200).json(carts);
+    res.status(200).json({ message: "Success", payload: carts });
   } catch (error) {
     res.status(404).json({ error: error.message });
   }
@@ -17,15 +17,7 @@ export const getCart = async (req, res) => {
 
     if (!cart) return res.status(404).json({ error: "Cart not found" });
 
-    cart.products.forEach((product) => {
-      product.totalPrice = product.quantity * product.product.price;
-    });
-
-    const grandTotal = cart.products.reduce((total, product) => {
-      return total + (product.totalPrice || 0);
-    }, 0);
-
-    res.render("carts", { cart, grandTotal });
+    res.status(200).json({ message: "Success", payload: { cart: cart } });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -156,3 +148,5 @@ export const deleteCartProducts = async (req, res) => {
     res.status(500).json({ status: "error", error: error.message });
   }
 };
+
+export const purchaseCart = async (req, res) => {};

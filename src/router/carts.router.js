@@ -8,20 +8,23 @@ import {
   putProductQuantity,
   deleteProduct,
   deleteCartProducts,
+  purchaseCart,
 } from "../controller/carts.controller.js";
+import { current } from "../middlewares/current.middleware.js";
 
 const router = Router();
 
 router.get("/", getCarts);
 router.get("/:cid", getCart);
+router.get("/:cid/purchase", purchaseCart);
 
-router.post("/", createCart);
-router.post("/:cid/products/:pid", addProduct);
+router.post("/", current("user"), createCart);
+router.post("/:cid/products/:pid", current("user"), addProduct);
 
-router.put("/:cid", modifyCart);
-router.put("/:cid/products/:pid", putProductQuantity);
+router.put("/:cid", current("user"), modifyCart);
+router.put("/:cid/products/:pid", current("user"), putProductQuantity);
 
-router.delete("/:cid/products/:pid", deleteProduct);
-router.delete("/:cid", deleteCartProducts);
+router.delete("/:cid/products/:pid", current("user"), deleteProduct);
+router.delete("/:cid", current("user"), deleteCartProducts);
 
 export default router;

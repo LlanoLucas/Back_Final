@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import UserDTO from "../dto/users.dto.js";
 
 export const login = (req, res) => {
   if (!req.user) {
@@ -42,6 +43,6 @@ export const logout = (req, res) => {
 };
 
 export const current = (req, res) => {
-  const user = req.user.user;
+  const user = new UserDTO(req.user.user);
   res.json({ status: "success", payload: user });
 };

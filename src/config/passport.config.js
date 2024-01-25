@@ -74,11 +74,9 @@ export const initializePassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          // Find or create a user based on GitHub profile information
           const user = await UserModel.findOne({ email: profile._json.email });
 
           if (user) {
-            // If the user exists, issue a JWT token
             const token = jwt.sign(
               {
                 sub: user._id,
@@ -95,24 +93,20 @@ export const initializePassport = () => {
               { expiresIn: "1h" }
             );
 
-            // Attach the token to the user object
             user.token = token;
 
-            // Pass the user object to the next step in the authentication process
             return done(null, user);
           } else {
-            // If the user does not exist, create a new user
             const newUser = await UserModel.create({
               first_name: profile._json.name,
               last_name: "",
               email: profile._json.email,
-              password: createHash("githubpassword"), // Replace with a secure method
+              password: createHash("githubpassword"),
               image: profile._json.avatar_url,
               cart: profile.cart,
               github: true,
             });
 
-            // Issue a JWT token for the new user
             const token = jwt.sign(
               {
                 sub: newUser._id,
@@ -129,10 +123,8 @@ export const initializePassport = () => {
               { expiresIn: "1h" }
             );
 
-            // Attach the token to the user object
             newUser.token = token;
 
-            // Pass the new user object to the next step in the authentication process
             return done(null, newUser);
           }
         } catch (error) {
@@ -158,8 +150,6 @@ export const initializePassport = () => {
           }
 
           done(null, jwt_payload);
-          // Your existing logic here, for example:
-          // Check if the user exists in the database and call done(null, user) if found
         } catch (error) {
           console.error("Error in JWT authentication:", error);
           return done(error, false);
