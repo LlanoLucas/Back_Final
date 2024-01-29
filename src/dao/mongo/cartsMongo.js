@@ -38,7 +38,7 @@ export const putProductQuantity = async (cid, pid, quantity) =>
 export const deleteProduct = async (cid, pid) =>
   await CartsModel.findByIdAndUpdate(
     cid,
-    { $pull: { products: { id: pid } } },
+    { $pull: { products: { product: pid } } },
     { new: true }
   );
 

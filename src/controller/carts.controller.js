@@ -41,7 +41,6 @@ export const createCart = async (req, res) => {
 export const addProduct = async (req, res) => {
   try {
     const pid = req.params.pid;
-    console.log(pid);
     const product = await ProductsRepository.getProduct(pid);
 
     if (!product) {
@@ -124,7 +123,7 @@ export const deleteProduct = async (req, res) => {
     if (!cart)
       return res.status(404).json({ msg: "Error to complete the action" });
 
-    res.status(200).json({ status: "success", payload: updatedCart.products });
+    res.status(200).json({ status: "success", payload: cart.products });
   } catch (error) {
     res.status(500).json({ status: "error", error: error.message });
   }
@@ -165,7 +164,6 @@ export const purchaseCart = async (req, res) => {
 
     const cartProducts = [];
     for (let i = 0; i < cart.products.length; i++) {
-      console.log(cart.products[i].product._id);
       let productId = cart.products[i].product._id.toString();
       let quantity = cart.products[i].quantity;
       cartProducts.push([productId, quantity]);
@@ -203,14 +201,13 @@ export const purchaseCart = async (req, res) => {
       total += productData.price * product[1];
     }
 
-    const purchaser = req.user.email;
-
-    if (boughtProducts.lentgh === 0) {
+    if (total === 0)
       return res.status(404).json({
         message: "Sorry, there is no stock available",
         failed: unBought,
       });
-    }
+
+    const purchaser = req.user.email;
 
     const ticket = await TicketsRepository.createTicket({
       amount: total,
@@ -218,26 +215,26 @@ export const purchaseCart = async (req, res) => {
     });
 
     if (unBought.length > 0) {
-      await CartsRepository.deleteCartProducts(cid);
-      for (const product of unBought) {
-        await CartsRepository.addProduct(cid, product[0]);
+      for (const product of boughtProducts) {
+        const productId = product[0];
+        await CartsRepository.deleteProduct(cid, productId);
       }
 
       return res.json({
         status: "success",
         message: "Successfull purchase",
-        payload: ticket,
+        ticket: ticket,
         bought: boughtProducts,
-        unbought: unBought,
+        failed: unBought,
       });
     }
 
-    await CartsRepository.deleteCart(cid);
+    await CartsRepository.deleteCartProducts(cid);
 
     return res.json({
       status: "success",
       message: "Successfull purchase",
-      payload: ticket,
+      ticket: ticket,
       bought: boughtProducts,
     });
   } catch (error) {

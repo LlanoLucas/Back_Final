@@ -90,7 +90,7 @@ export const initializePassport = () => {
                 },
               },
               process.env.JWT_SECRET,
-              { expiresIn: "1h" }
+              { expiresIn: "8h" }
             );
 
             user.token = token;
