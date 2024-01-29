@@ -11,15 +11,31 @@ export const auth = (req, res, next) => {
 };
 
 export const verifyJWT = (req, res, next) => {
-  const jwtCookie = req.cookies.jwt;
+  let jwtToken;
+
+  const headerToken = req.header("Authorization");
+  if (headerToken && headerToken.startsWith("Bearer ")) {
+    jwtToken = headerToken.substring(7);
+  }
+
+  if (!jwtToken) {
+    const jwtCookie = req.cookies.jwt;
+    if (jwtCookie) {
+      jwtToken = jwtCookie;
+    }
+  }
 
   try {
-    const decodedToken = jwt.verify(jwtCookie, process.env.JWT_SECRET);
-    req.user = {
-      sub: decodedToken.sub,
-      ...decodedToken.user,
-    };
-    next();
+    if (jwtToken) {
+      const decodedToken = jwt.verify(jwtToken, process.env.JWT_SECRET);
+      req.user = {
+        sub: decodedToken.sub,
+        ...decodedToken.user,
+      };
+      next();
+    } else {
+      throw new Error("Token not found");
+    }
   } catch (error) {
     console.log("Token verification failed:", error.message);
     res.status(401).json({ message: "Token verification failed" });

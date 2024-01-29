@@ -12,14 +12,20 @@ export const addProduct = async (cid, pid) => {
 
   if (!cart) return null;
 
-  const productInCart = carrito.products.find((p) => p.id.toString() === pid);
+  let productInCart;
 
-  if (productInCart) productInCart.quantity++;
-  else cart.products.push({ id: pid, quantity: 1 });
+  if (cart.products.length > 0) {
+    productInCart = cart.products.find((p) => p.product._id.toString() === pid);
+  }
 
-  carrito.save();
+  if (productInCart) {
+    productInCart.quantity++;
+  } else {
+    cart.products.push({ product: pid, quantity: 1 });
+  }
 
-  return carrito;
+  await cart.save();
+  return cart;
 };
 
 export const putProductQuantity = async (cid, pid, quantity) =>
@@ -42,3 +48,6 @@ export const deleteCartProducts = async (cid) =>
     { $set: { products: [] } },
     { new: true }
   );
+
+export const deleteCart = async (cid) =>
+  await CartsModel.findByIdAndDelete(cid);

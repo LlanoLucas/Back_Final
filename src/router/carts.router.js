@@ -11,20 +11,26 @@ import {
   purchaseCart,
 } from "../controller/carts.controller.js";
 import { current } from "../middlewares/current.middleware.js";
+import { verifyJWT } from "../middlewares/jwt.middleware.js";
 
 const router = Router();
 
 router.get("/", getCarts);
 router.get("/:cid", getCart);
-router.get("/:cid/purchase", purchaseCart);
 
-router.post("/", current("user"), createCart);
-router.post("/:cid/products/:pid", current("user"), addProduct);
+router.post("/", verifyJWT, current("user"), createCart);
+router.post("/:cid/products/:pid", verifyJWT, current("user"), addProduct);
+router.get("/:cid/purchase", verifyJWT, purchaseCart);
 
-router.put("/:cid", current("user"), modifyCart);
-router.put("/:cid/products/:pid", current("user"), putProductQuantity);
+router.put("/:cid", verifyJWT, current("user"), modifyCart);
+router.put(
+  "/:cid/products/:pid",
+  verifyJWT,
+  current("user"),
+  putProductQuantity
+);
 
-router.delete("/:cid/products/:pid", current("user"), deleteProduct);
-router.delete("/:cid", current("user"), deleteCartProducts);
+router.delete("/:cid/products/:pid", verifyJWT, current("user"), deleteProduct);
+router.delete("/:cid", verifyJWT, current("user"), deleteCartProducts);
 
 export default router;

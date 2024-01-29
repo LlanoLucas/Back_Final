@@ -19,7 +19,7 @@ export const login = (req, res) => {
       },
     },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: "8h" }
   );
 
   res.cookie("jwt", token, {

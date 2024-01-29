@@ -5,7 +5,8 @@ const ticketCollection = "tickets";
 const ticketsSchema = new mongoose.Schema({
   code: {
     type: String,
-    required: [true, "The ticket code is required"],
+    default: (Math.random() + 1).toString(36).substring(5),
+    required: true,
   },
   purchase_datetime: {
     type: Date,

@@ -11,3 +11,4 @@ export const deleteProduct = async (cid, pid) =>
   await CartsDao.deleteProduct(cid, pid);
 export const deleteCartProducts = async (cid) =>
   await CartsDao.deleteCartProducts(cid);
+export const deleteCart = async (cid) => await CartsDao.deleteCart(cid);

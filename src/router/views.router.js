@@ -50,7 +50,7 @@ router.get(
 
 router.get(
   "/github",
-  passport.authenticate("github", { scope: ["user:email"] }),
+  passport.authenticate("github", { scope: ["user:email"], session: false }),
   async (req, res) => {}
 );
 
