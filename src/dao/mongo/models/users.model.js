@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { CartsRepository } from "../../../repositories/index.js";
 
 const UserModel = mongoose.model(
   "users",

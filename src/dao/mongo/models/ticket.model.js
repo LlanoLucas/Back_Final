@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
+import crypto from "crypto";
 
 const ticketCollection = "tickets";
 
 const ticketsSchema = new mongoose.Schema({
   code: {
     type: String,
-    default: (Math.random() + 1).toString(36).substring(5),
+    default: crypto.randomBytes(5).toString("hex"),
     required: true,
   },
   purchase_datetime: {

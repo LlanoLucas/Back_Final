@@ -184,7 +184,7 @@ export const purchaseCart = async (req, res) => {
     for (let i = 0; i < cartProducts.length; i++) {
       let enoughStock = stockProducts[i][1] - cartProducts[i][1];
       if (enoughStock < 0) {
-        unBought.push(cartProducts[i][0], cartProducts[i][1]);
+        unBought.push([cartProducts[i][0], cartProducts[i][1]]);
         continue;
       }
 
@@ -195,47 +195,113 @@ export const purchaseCart = async (req, res) => {
     }
 
     let total = 0;
+    let unTotal = 0;
 
     for (const product of boughtProducts) {
       let productData = await ProductsRepository.getProduct(product[0]);
       total += productData.price * product[1];
     }
 
-    if (total === 0)
-      return res.status(404).json({
-        message: "Sorry, there is no stock available",
-        failed: unBought,
-      });
+    for (const product of unBought) {
+      let productData = await ProductsRepository.getProduct(product[0]);
+      unTotal += productData.price * product[1];
+    }
 
     const purchaser = req.user.email;
+
+    let boughtDetail = [];
+
+    for (const product of boughtProducts) {
+      const productData = await ProductsRepository.getProduct(product[0]);
+      const productTitle = productData.title;
+      const quantity = product[1];
+      const price = productData.price;
+      const totalProduct = price * quantity;
+      boughtDetail.push({
+        productTitle: productTitle,
+        quantity: quantity,
+        price: price,
+        totalProduct: totalProduct,
+      });
+    }
+
+    if (unBought.length > 0) {
+      let unBoughtDetail = [];
+
+      for (const product of unBought) {
+        const productData = await ProductsRepository.getProduct(product[0]);
+        const productTitle = productData.title;
+        const quantity = product[1];
+        const price = productData.price;
+        const totalProduct = price * quantity;
+        unBoughtDetail.push({
+          productTitle: productTitle,
+          quantity: quantity,
+          price: price,
+          totalProduct: totalProduct,
+        });
+      }
+
+      if (total === 0)
+        return res.render("purchase", {
+          ticket: false,
+          unBoughtDetail,
+        });
+
+      for (const product of boughtProducts) {
+        const productId = product[0];
+        await CartsRepository.deleteProduct(cid, productId);
+      }
+
+      const ticket = await TicketsRepository.createTicket({
+        amount: total,
+        purchaser: purchaser,
+      });
+
+      const ticketPurchaser = purchaser;
+      const ticketAmount = total;
+      const ticketDate = `${ticket.purchase_datetime.getDate()}/${
+        ticket.purchase_datetime.getMonth() + 1
+      }/${ticket.purchase_datetime.getFullYear()}`;
+      const ticketCode = ticket.code;
+
+      return res.render("purchase", {
+        ticket,
+        total,
+        unTotal,
+        boughtDetail,
+        unBoughtDetail,
+        ticketPurchaser,
+        ticketAmount,
+        ticketDate,
+        ticketCode,
+      });
+    }
 
     const ticket = await TicketsRepository.createTicket({
       amount: total,
       purchaser: purchaser,
     });
 
-    if (unBought.length > 0) {
-      for (const product of boughtProducts) {
-        const productId = product[0];
-        await CartsRepository.deleteProduct(cid, productId);
-      }
-
-      return res.json({
-        status: "success",
-        message: "Successfull purchase",
-        ticket: ticket,
-        bought: boughtProducts,
-        failed: unBought,
-      });
-    }
-
     await CartsRepository.deleteCartProducts(cid);
 
-    return res.json({
-      status: "success",
-      message: "Successfull purchase",
-      ticket: ticket,
-      bought: boughtProducts,
+    const ticketPurchaser = purchaser;
+    const ticketAmount = total;
+    const ticketDate = `${ticket.purchase_datetime.getDate()}/${
+      ticket.purchase_datetime.getMonth() + 1
+    }/${ticket.purchase_datetime.getFullYear()}`;
+    const ticketCode = ticket.code;
+
+    return res.render("purchase", {
+      ticket,
+      total,
+      unTotal,
+      boughtDetail,
+      ticketPurchaser,
+      ticketAmount,
+      ticketDate,
+      ticketCode,
+      unBoughtDetail: false,
     });
   } catch (error) {
     res.status(500).json({ status: "error purchase", error: error.message });

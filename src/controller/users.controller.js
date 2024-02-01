@@ -16,11 +16,13 @@ export const login = (req, res) => {
         email: user.email,
         image: user.image,
         role: user.role,
+        cart: user.cart,
       },
     },
     process.env.JWT_SECRET,
     { expiresIn: "8h" }
   );
+  console.log(user);
 
   res.cookie("jwt", token, {
     httpOnly: true,

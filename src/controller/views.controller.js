@@ -1,7 +1,7 @@
 import ProductsModel from "../dao/mongo/models/products.model.js";
 import MessageModel from "../dao/mongo/models/messages.model.js";
 import jwt from "jsonwebtoken";
-import { CartsRepository } from "../repositories/index.js";
+import { CartsRepository, UsersRepository } from "../repositories/index.js";
 import UserDTO from "../dto/users.dto.js";
 
 export const home = async (req, res) => {
@@ -26,14 +26,24 @@ export const home = async (req, res) => {
 
   if (places && places === "true") queryConditions.stock = { $gt: 0 };
 
+  const user = req.user.user;
+
+  if (!user.cart && user.role !== "admin") {
+    const dbUser = await UsersRepository.getUserByEmail(req.user.user.email);
+    user.cart = dbUser.cart.toString();
+  }
+  const products = await ProductsModel.paginate(queryConditions, options);
+
+  const isAdmin = user.role === "admin";
+
   try {
-    const products = await ProductsModel.paginate(queryConditions, options);
     res.render("home", {
       products,
       sortQuery,
       queryQuery,
       queryPlaces,
       user: req.user.user,
+      isAdmin,
     });
   } catch (error) {
     console.error(error);
@@ -55,8 +65,10 @@ export const realTimeProducts = async (req, res) => {
       productsQuery.sort({ price: sort });
     }
 
+    const isAdmin = req.user.user.role === "admin";
+
     const products = await productsQuery.exec();
-    res.render("realTimeProducts", { products });
+    res.render("realTimeProducts", { products, isAdmin });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -89,7 +101,7 @@ export const chat = async (req, res) => {
     const messages = await MessageModel.find().lean().exec();
     res.render("chat", { messages });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({ status: "error", error: err.message });
   }
 };
@@ -103,7 +115,8 @@ export const register = (req, res) => {
 };
 
 export const profile = (req, res) => {
-  return res.render("profile", { user: new UserDTO(req.user.user) });
+  const isAdmin = req.user.user.role === "admin";
+  return res.render("profile", { user: new UserDTO(req.user.user), isAdmin });
 };
 
 export const callBack = async (req, res) => {
@@ -132,4 +145,11 @@ export const callBack = async (req, res) => {
   });
 
   return res.redirect("/");
+};
+
+export const navigation = async (req, res) => {
+  const user = await UsersRepository.getUserByEmail(req.user.user.email);
+  const cart = user.cart;
+  const isAdmin = user.role === "admin";
+  res.render("navigation", { cart, isAdmin });
 };

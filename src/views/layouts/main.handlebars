@@ -3,6 +3,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/toastify-js"
+    ></script>
     <title>{{title}}</title>
   </head>
   <body>
@@ -18,10 +27,18 @@
               href="/"
               class="border-b-2 border-transparent hover:border-blue-50 py-0.5 px-1 hover:text-blue-50 transition-all duration-200"
             >Courses</a></li>
-          <li><a
-              href="/cart/65b7ae2385c02ddbb36fe4c4"
-              class="border-b-2 border-transparent hover:border-blue-50 py-0.5 px-1 hover:text-blue-50 transition-all duration-200"
-            >Cart</a></li>
+          {{#if isAdmin}}
+            <li><a
+                href="/realtimeproducts"
+                class="border-b-2 border-transparent hover:border-blue-50 py-0.5 px-1 hover:text-blue-50 transition-all duration-200"
+              >Live Products</a></li>
+
+          {{else}}
+            <li><a
+                href="/cart/{{user.cart}}"
+                class="border-b-2 border-transparent hover:border-blue-50 py-0.5 px-1 hover:text-blue-50 transition-all duration-200"
+              >Cart</a></li>
+          {{/if}}
           <li><a
               href="/profile"
               class="border-b-2 border-transparent hover:border-blue-50 py-0.5 px-1 hover:text-blue-50 transition-all duration-200"

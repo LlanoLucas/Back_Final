@@ -49,11 +49,6 @@ app.engine("handlebars", handlebars.engine());
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "handlebars");
 
-app.get("/navigation", (req, res) => {
-  if (!req.cookies.jwt) return res.redirect("/login");
-  res.render("navigation");
-});
-
 app.use("/", viewsRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);

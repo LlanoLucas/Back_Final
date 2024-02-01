@@ -1,0 +1,109 @@
+{{#if ticket}}
+  <h1 class="text-4xl mt-8 text-center font-bold">SUCCESSFULL PURCHASE!</h1>
+
+  <h2 class="text-2xl mt-8 text-center font-semibold">BOUGHT PRODUCTS</h2>
+
+  <section
+    class="flex mt-5 mx-auto flex-col bg-blue-100 w-7/12 rounded-md p-2 gap-2"
+  >
+    {{#each boughtDetail}}
+      <article
+        class="flex justify-between items-center py-3 px-5 rounded bg-blue-50 w-full"
+      >
+        <div>
+          <h2
+            class="text-2xl uppercase w-80 font-semibold"
+          >{{this.productTitle}}</h2>
+        </div>
+        <div>
+          <div class="flex gap-3 items-center text-lg justify-end">
+            <p class="text-start font-semibold">{{this.quantity}}
+              x ${{this.price}}</p>
+          </div>
+        </div>
+        <p class="text-2xl font-bold">${{this.totalProduct}}</p>
+      </article>
+    {{/each}}
+
+    <strong class="text-2xl font-bold self-end pr-5">TOTAL: ${{total}}</strong>
+  </section>
+
+  {{#if unBoughtDetail}}
+
+    <h2 class="text-2xl mt-12 text-center font-semibold">FAILED TO BUY BECAUSE
+      OF STOCK</h2>
+
+    <section
+      class="flex mx-auto mt-5 flex-col bg-blue-100 w-7/12 rounded-md p-2 gap-2"
+    >
+      {{#each unBoughtDetail}}
+        <article
+          class="flex justify-between items-center py-3 px-5 rounded bg-blue-50 w-full"
+        >
+          <div>
+            <h2
+              class="text-2xl uppercase w-80 font-semibold"
+            >{{this.productTitle}}</h2>
+          </div>
+          <div>
+            <div class="flex gap-3 items-center text-lg justify-end">
+              <p class="text-start font-semibold">{{this.quantity}}
+                x ${{this.price}}</p>
+            </div>
+          </div>
+          <p class="text-2xl font-bold">${{this.totalProduct}}</p>
+        </article>
+      {{/each}}
+
+      <strong class="text-2xl font-bold self-end pr-5">TOTAL: ${{unTotal}}</strong>
+    </section>
+
+  {{/if}}
+
+  <h2 class="mt-8 text-2xl text-center font-bold">THANK YOU FOR YOUR PURCHASE!</h2>
+
+  <footer
+    class="mt-8 mx-auto flex flex-col gap-2 w-max p-5 bg-blue-50 mb-5 rounded-md"
+  >
+    <p class="block block text-center text-2xl mb-3 font-bold">TICKET</p>
+    <p class="block text-center"><span class="font-bold">PURCHASER:</span><br
+      />{{ticketPurchaser}}</p>
+    <p class="block text-center"><span class="font-bold">TOTAL:</span><br
+      />${{ticketAmount}}</p>
+    <p class="block text-center"><span class="font-bold">DATE:</span><br
+      />{{ticketDate}}</p>
+    <p class="block text-center"><span class="font-bold">CODE:</span><br
+      />{{ticketCode}}</p>
+  </footer>
+
+{{else}}
+
+  <h1 class="mt-8 text-2xl text-center font-bold">SORRY THERE IS NO STOCK FOR
+    THE PRODUCTS:</h1>
+
+  <section
+    class="flex flex-col mx-auto mt-5 bg-blue-100 w-7/12 rounded-md p-2 gap-2"
+  >
+    {{#each unBoughtDetail}}
+      <article
+        class="flex justify-between items-center py-3 px-5 rounded bg-blue-50 w-full"
+      >
+        <div>
+          <h2
+            class="text-2xl uppercase w-80 font-semibold"
+          >{{this.productTitle}}</h2>
+        </div>
+        <div>
+          <div class="flex gap-3 items-center text-lg justify-end">
+            <p class="text-start font-semibold">{{this.quantity}}
+              x ${{this.price}}</p>
+          </div>
+        </div>
+        <p class="text-2xl font-bold">${{this.totalProduct}}</p>
+      </article>
+    {{/each}}
+
+    <strong class="text-2xl font-bold self-end pr-5">TOTAL: ${{unTotal}}</strong>
+  </section>
+
+{{/if}}

@@ -5,6 +5,7 @@ import local from "passport-local";
 import { createHash, isValidPassword } from "../utils/bcrypt.password.js";
 import jwt from "jsonwebtoken";
 import passportJWT from "passport-jwt";
+import { CartsRepository } from "../repositories/index.js";
 
 const LocalStrategy = local.Strategy;
 const current = passportJWT.Strategy;
@@ -31,6 +32,8 @@ export const initializePassport = () => {
           }
 
           req.body.password = createHash(password);
+          const cart = await CartsRepository.createCart();
+          req.body.cart = cart._id;
           const newUser = await UserModel.create({ ...req.body });
 
           if (newUser) return done(null, newUser);
@@ -84,9 +87,9 @@ export const initializePassport = () => {
                   first_name: user.first_name,
                   last_name: user.last_name,
                   email: user.email,
-                  image: user.image,
                   role: user.role,
                   cart: user.cart,
+                  image: user.image,
                 },
               },
               process.env.JWT_SECRET,
@@ -103,7 +106,7 @@ export const initializePassport = () => {
               email: profile._json.email,
               password: createHash("githubpassword"),
               image: profile._json.avatar_url,
-              cart: profile.cart,
+              cart: await CartsRepository.createCart(),
               github: true,
             });
 
@@ -120,7 +123,7 @@ export const initializePassport = () => {
                 },
               },
               process.env.JWT_SECRET,
-              { expiresIn: "1h" }
+              { expiresIn: "8h" }
             );
 
             newUser.token = token;

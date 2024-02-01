@@ -10,11 +10,10 @@ import {
   register,
   profile,
   callBack,
+  navigation,
 } from "../controller/views.controller.js";
 import { hasToken, auth, verifyJWT } from "../middlewares/jwt.middleware.js";
 import { current } from "../middlewares/current.middleware.js";
-import { CartsRepository } from "../repositories/index.js";
-import UserDTO from "../dto/users.dto.js";
 
 const router = Router();
 
@@ -40,6 +39,13 @@ router.get("/chat", hasToken, verifyJWT, current("user"), chat);
 router.get("/login", auth, login);
 
 router.get("/register", auth, register);
+
+router.get(
+  "/navigation",
+  hasToken,
+  passport.authenticate("jwt", { session: false }),
+  navigation
+);
 
 router.get(
   "/profile",

@@ -26,12 +26,23 @@
           {{this.category}}</p>
         <p class="text-start"><b class="font-semibold">Places left:</b>
           {{this.stock}}</p>
-        <div class="flex items-center mt-3 mb-1">
+      <div class="flex items-center mt-3 mb-1   ">
+        <form
+          id="addToCartForm{{this.id}}"
+          action="api/carts/{{../user.cart}}/products/{{this.id}}"
+          method="post"
+          target="hiddenFrame"
+          class="w-full py-0.5 mb-0 mr-4 ml-2 text-xl border-2 bg-blue-200 border-blue-400 py-0.5 text-xl font-semibold rounded hover:bg-blue-300 hover:border-blue-500 active:scale-95 transition-all duration-300"
+        >
           <button
-            class="w-full py-0.5 mr-4 ml-2 text-xl font-semibold rounded bg-gradient-to-r from-cyan-300 to-blue-300 hover:ml-0 hover:mr-2 active:py-1 active:mt-1 transition-all duration-300"
+            type="submit"
+            class="w-full"
+            onclick="showNotification()"
           >ADD TO CART</button>
-          <p class="text-end font-semibold text-2xl">${{this.price}}</p>
-        </div>
+        </form>
+        <iframe name="hiddenFrame" style="display:none;"></iframe>
+        <p class="text-end font-semibold text-2xl">${{this.price}}</p>
+      </div>
       </article>
     {{/each}}
   </main>
@@ -56,3 +67,15 @@
     </ul>
   </section>
 </div>
+
+<script>
+  function showNotification() {
+    Toastify({
+      text: "Product added to cart!",
+      duration: 3000,
+      backgroundColor: "#60a5fa",
+      gravity: "bottom",
+      position: "right",
+    }).showToast();
+  }
+</script>
