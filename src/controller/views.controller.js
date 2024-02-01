@@ -98,8 +98,9 @@ export const carts = async (req, res) => {
 
 export const chat = async (req, res) => {
   try {
+    const user = req.user ?? req.user.user;
     const messages = await MessageModel.find().lean().exec();
-    res.render("chat", { messages });
+    res.render("chat", { messages, user });
   } catch (err) {
     console.error(err);
     res.status(500).json({ status: "error", error: err.message });
@@ -116,7 +117,11 @@ export const register = (req, res) => {
 
 export const profile = (req, res) => {
   const isAdmin = req.user.user.role === "admin";
-  return res.render("profile", { user: new UserDTO(req.user.user), isAdmin });
+  const user = new UserDTO(req.user.user ?? req.user);
+  return res.render("profile", {
+    user,
+    isAdmin,
+  });
 };
 
 export const callBack = async (req, res) => {
