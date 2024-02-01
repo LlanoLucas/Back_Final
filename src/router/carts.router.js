@@ -20,7 +20,7 @@ router.get("/:cid", getCart);
 
 router.post("/", verifyJWT, current("user"), createCart);
 router.post("/:cid/products/:pid", verifyJWT, current("user"), addProduct);
-router.get("/:cid/purchase", verifyJWT, purchaseCart);
+router.get("/:cid/purchase", verifyJWT, current("user"), purchaseCart);
 
 router.put("/:cid", verifyJWT, current("user"), modifyCart);
 router.put(
