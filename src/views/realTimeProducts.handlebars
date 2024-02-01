@@ -124,8 +124,8 @@
     <thead>
       <tr class="bg-blue-200 text-center border-2 border-black">
         <th class="border-2 border-black">CODE</th>
-        <th class="border-2 border-black">COURSE</th>
         <th class="border-2 border-black">CATEGORY</th>
+        <th class="border-2 border-black">COURSE</th>
         <th class="border-2 border-black">DESCRIPTION</th>
         <th class="border-2 border-black px-2">PLACES</th>
         <th class="border-2 border-black px-2">PRICE</th>
@@ -136,8 +136,10 @@
       {{#each products}}
         <tr class="text-center border-2 border-black">
           <td class="border-2 border-black px-2">{{this.code}}</td>
-          <td class="border-2 border-black px-2">{{this.title}}</td>
-          <td class="border-2 border-black px-2">{{this.category}}</td>
+          <td
+            class="border-2 border-black px-2 uppercase"
+          >{{this.category}}</td>
+          <td class="border-2 border-black px-2 uppercase">{{this.title}}</td>
           <td
             class="border-2 border-black text-start px-2"
           >{{this.description}}</td>
