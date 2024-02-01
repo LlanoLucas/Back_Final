@@ -55,7 +55,7 @@ export const initializePassport = () => {
           const user = await UserModel.findOne({ email: username });
 
           if (!user || !isValidPassword(password, user.password)) {
-            console.log("Invalid credentials");
+            console.log("Invalid mail or password");
             return done(null, false);
           }
 
