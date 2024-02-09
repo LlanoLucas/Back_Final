@@ -1,3 +1,4 @@
+import { JWT_SECRET } from "../config/config.js";
 import jwt from "jsonwebtoken";
 
 export const hasToken = (req, res, next) => {
@@ -27,7 +28,7 @@ export const verifyJWT = (req, res, next) => {
 
   try {
     if (jwtToken) {
-      const decodedToken = jwt.verify(jwtToken, process.env.JWT_SECRET);
+      const decodedToken = jwt.verify(jwtToken, JWT_SECRET);
       req.user = {
         sub: decodedToken.sub,
         ...decodedToken.user,

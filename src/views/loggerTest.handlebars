@@ -28,18 +28,20 @@
         >INFO</span>
         <p class="text-lg italic">The info log test will appear in console</p>
       </li>
-      <li class="flex items-center gap-3">
-        <span
-          class="rounded-md w-28 border-2 border-black text-center bg-green-400 text-xl font-bold text-white px-1 py-1"
-        >HTTP</span>
-        <p class="text-lg italic">The http log test will appear in console</p>
-      </li>
-      <li class="flex items-center gap-3">
-        <span
-          class="rounded-md w-28 border-2 border-black text-center bg-blue-400 text-xl font-bold text-white px-1 py-1"
-        >DEBUG</span>
-        <p class="text-lg italic">The DEBUG log test will appear in console</p>
-      </li>
+      {{#if environment}}
+        <li class="flex items-center gap-3">
+          <span
+            class="rounded-md w-28 border-2 border-black text-center bg-green-400 text-xl font-bold text-white px-1 py-1"
+          >HTTP</span>
+          <p class="text-lg italic">The http log test will appear in console</p>
+        </li>
+        <li class="flex items-center gap-3">
+          <span
+            class="rounded-md w-28 border-2 border-black text-center bg-blue-400 text-xl font-bold text-white px-1 py-1"
+          >DEBUG</span>
+          <p class="text-lg italic">The DEBUG log test will appear in console</p>
+        </li>
+      {{/if}}
     </ul>
   </div>
 </div>

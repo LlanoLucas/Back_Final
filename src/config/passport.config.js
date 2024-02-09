@@ -62,7 +62,7 @@ export const initializePassport = () => {
           const user = await UserModel.findOne({ email: username });
 
           if (!user || !isValidPassword(password, user.password)) {
-            logger.warn("Invalid mail or password");
+            logger.warning("Invalid mail or password");
             return done(null, false);
           }
 

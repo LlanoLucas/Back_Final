@@ -1,6 +1,7 @@
 import ProductsModel from "../dao/mongo/models/products.model.js";
 import mongoose from "mongoose";
 import { ProductsRepository } from "../repositories/index.js";
+import { logger } from "../utils/logger.js";
 
 export const getProducts = async (req, res) => {
   try {
@@ -26,7 +27,7 @@ export const getProducts = async (req, res) => {
 
     res.json({ status: "success", payload: products });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -42,13 +43,13 @@ export const getProduct = async (req, res) => {
     let product = await ProductsRepository.getProduct(pId);
 
     if (!product) {
-      console.error("Producto no encontrado");
+      logger.warning("Product not found");
     }
     res.json({ status: "success", payload: product });
   } catch (err) {
     res.status(500).json({
       status: "error",
-      message: `Ocurrió un error al realizar la petición del producto... (${err})`,
+      message: `An error occurred while placing the product request... (${err})`,
     });
   }
 };
@@ -80,7 +81,7 @@ export const addProduct = async (req, res) => {
     const addedProduct = await ProductsRepository.addProduct(productToAdd);
 
     return res.status(201).json({
-      message: `Producto (ID: ${addedProduct._id}) añadido exitosamente`,
+      message: `Product (ID: ${addedProduct._id}) successfully added`,
       product: addedProduct,
     });
   } catch (err) {
@@ -94,9 +95,7 @@ export const updateProduct = async (req, res) => {
     const { id, ...updated } = req.body;
 
     if (id && id !== productId) {
-      return res
-        .status(400)
-        .json({ error: "No se puede modificar el ID del producto" });
+      return res.status(400).json({ error: "Cannot modify product ID" });
     }
 
     const updatedProduct = await ProductsRepository.updateProduct(
@@ -105,7 +104,7 @@ export const updateProduct = async (req, res) => {
     );
 
     res.status(200).json({
-      message: `El producto (ID: ${productId}) fue actualizado correctamente!`,
+      message: `Product (ID: ${productId}) successfully updated!`,
       product: updatedProduct,
     });
   } catch (err) {
@@ -126,17 +125,17 @@ export const deleteProduct = async (req, res) => {
     if (!deletedProduct) {
       res.status(404).json({
         status: "error",
-        message: `El producto (ID: ${productId}) no se ha encontrado`,
+        message: `Product (ID: ${productId}) not found`,
       });
-      console.error(`El producto (ID: ${productId}) no se ha encontrado`);
+      logger.warning(`Product (ID: ${productId}) not found`);
       return;
     }
 
     res.status(200).json({
-      message: `El producto (ID: ${productId}) ha sido eliminado correctamente`,
+      message: `Product (ID: ${productId}) successfully deleted`,
     });
 
-    console.log("Producto eliminado:", deletedProduct);
+    logger.info("Deleted product:", deletedProduct);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

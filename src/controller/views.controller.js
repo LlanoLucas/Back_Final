@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { CartsRepository, UsersRepository } from "../repositories/index.js";
 import UserDTO from "../dto/users.dto.js";
 import { logger } from "../utils/logger.js";
+import { JWT_SECRET, NODE_ENV } from "../config/config.js";
 
 export const home = async (req, res) => {
   const { limit = 3, page = 1, sort, query, places } = req.query;
@@ -141,13 +142,13 @@ export const callBack = async (req, res) => {
         role: user.role,
       },
     },
-    process.env.JWT_SECRET,
+    JWT_SECRET,
     { expiresIn: "1h" }
   );
 
   res.cookie("jwt", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: NODE_ENV === "production",
   });
 
   return res.redirect("/");
@@ -168,5 +169,7 @@ export const loggerTest = (req, res) => {
   req.logger.error("This is a error log test");
   req.logger.fatal("This is a fatal log test");
 
-  return res.render("loggerTest");
+  const environment = NODE_ENV === "development";
+
+  return res.render("loggerTest", { environment });
 };
