@@ -1,7 +1,7 @@
 import { PORT } from "./utils.js";
 import __dirname from "./utils.js";
 import { Server } from "socket.io";
-import dotenv from "dotenv";
+import { MONGODB_NAME, MONGODB_URL, SESSION_KEY } from "./config/config.js";
 
 import express from "express";
 import mongoose from "mongoose";
@@ -10,28 +10,25 @@ import session from "express-session";
 import passport from "passport";
 import { initializePassport } from "./config/passport.config.js";
 import cookieParser from "cookie-parser";
+import { addLogger, logger } from "./utils/logger.js";
 
 import MessageModel from "./dao/mongo/models/messages.model.js";
 import productsRouter from "./router/products.router.js";
 import cartsRouter from "./router/carts.router.js";
 import sessionRouter from "./router/session.router.js";
 import viewsRouter from "./router/views.router.js";
-
-dotenv.config();
+import winston from "winston";
 
 const app = express();
 app.use(express.static(`${__dirname}/public`));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-const mongoURL = process.env.MONGODB_URL;
-const mongoDBName = process.env.MONGODB_NAME;
-
+app.use(addLogger);
 app.use(cookieParser());
 
 app.use(
   session({
-    secret: process.env.SESSION_KEY,
+    secret: SESSION_KEY,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -55,21 +52,21 @@ app.use("/api/carts", cartsRouter);
 app.use("/api/session", sessionRouter);
 
 mongoose
-  .connect(mongoURL, { dbName: mongoDBName })
+  .connect(MONGODB_URL, { dbName: MONGODB_NAME })
   .then(() => {
-    console.log("DB connected");
+    logger.info("DB connected").message;
     const httpServer = app.listen(PORT, () =>
-      console.log(`Listening on port ${PORT}...`)
+      logger.info(`Listening on port ${PORT}...`)
     );
 
     const io = new Server(httpServer);
     app.set("socketio", io);
 
     io.on("connection", async (socket) => {
-      console.log("New client connected");
+      logger.info("New client connected");
 
       socket.on("productList", (data) => {
-        console.log("Received 'productList' from client:", data);
+        logger.info("Received 'productList' from client:", data);
         io.emit("updatedProducts", data);
       });
 

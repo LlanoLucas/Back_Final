@@ -5,7 +5,14 @@ import local from "passport-local";
 import { createHash, isValidPassword } from "../utils/bcrypt.password.js";
 import jwt from "jsonwebtoken";
 import passportJWT from "passport-jwt";
+import { logger } from "../utils/logger.js";
 import { CartsRepository } from "../repositories/index.js";
+import {
+  CLIENT_ID,
+  CLIENT_SECRET,
+  CALLBACK_URL,
+  JWT_SECRET,
+} from "./config.js";
 
 const LocalStrategy = local.Strategy;
 const current = passportJWT.Strategy;
@@ -22,12 +29,12 @@ export const initializePassport = () => {
           const { confirmPassword } = req.body;
 
           if (password !== confirmPassword) {
-            console.log("Passwords do not match");
+            logger.info("Passwords do not match");
             return done(null, false);
           }
 
           if (user) {
-            console.log("User already registered");
+            logger.info("User already registered");
             return done(null, false);
           }
 
@@ -55,7 +62,7 @@ export const initializePassport = () => {
           const user = await UserModel.findOne({ email: username });
 
           if (!user || !isValidPassword(password, user.password)) {
-            console.log("Invalid mail or password");
+            logger.warn("Invalid mail or password");
             return done(null, false);
           }
 
@@ -71,9 +78,9 @@ export const initializePassport = () => {
     "github",
     new GitHubStrategy(
       {
-        clientID: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
-        callbackURL: process.env.CALLBACK_URL,
+        clientID: CLIENT_ID,
+        clientSecret: CLIENT_SECRET,
+        callbackURL: CALLBACK_URL,
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
@@ -122,7 +129,7 @@ export const initializePassport = () => {
                   cart: newUser.cart,
                 },
               },
-              process.env.JWT_SECRET,
+              JWT_SECRET,
               { expiresIn: "8h" }
             );
 
@@ -144,7 +151,7 @@ export const initializePassport = () => {
         jwtFromRequest: passportJWT.ExtractJwt.fromExtractors([
           (req) => req?.cookies?.jwt ?? null,
         ]),
-        secretOrKey: process.env.JWT_SECRET,
+        secretOrKey: JWT_SECRET,
       },
       (jwt_payload, done) => {
         try {
@@ -154,7 +161,7 @@ export const initializePassport = () => {
 
           done(null, jwt_payload);
         } catch (error) {
-          console.error("Error in JWT authentication:", error);
+          logger.error("Error in JWT authentication:", error);
           return done(error, false);
         }
       }

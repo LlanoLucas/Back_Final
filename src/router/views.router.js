@@ -11,6 +11,7 @@ import {
   profile,
   callBack,
   navigation,
+  loggerTest,
 } from "../controller/views.controller.js";
 import { hasToken, auth, verifyJWT } from "../middlewares/jwt.middleware.js";
 import { current } from "../middlewares/current.middleware.js";
@@ -67,5 +68,7 @@ router.get(
   }),
   callBack
 );
+
+router.get("/loggerTest", hasToken, loggerTest);
 
 export default router;

@@ -29,7 +29,6 @@ class ProductManager {
   }) => {
     const products = await this.getProducts();
 
-    // Define un array de campos requeridos
     const requiredFields = [
       "title",
       "description",
@@ -39,13 +38,10 @@ class ProductManager {
       "category",
     ];
 
-    // Verifica si ya existe un producto con el mismo código
     const isCodeRepeated = products.some((p) => p.code === code);
 
     if (isCodeRepeated) {
-      return console.error(
-        `Error: Ya existe un producto con el código ${code}.`
-      );
+      return logger.warning(`Product ${code} already exists`);
     }
 
     const productToAdd = {
@@ -65,7 +61,7 @@ class ProductManager {
     );
 
     if (haveEmptyValue) {
-      return console.error("Error: Todos los campos deben tener un valor.");
+      return logger.error("Every field has to be filled");
     }
 
     products.push(productToAdd);
@@ -76,12 +72,9 @@ class ProductManager {
         this.path,
         JSON.stringify(this.products, null, "\t")
       );
-      // console.log(
-      //   `Producto ${productToAdd.id} agregado: ${JSON.stringify(productToAdd)}`
-      // );
       return productToAdd;
     } catch (error) {
-      console.error("Error al escribir el archivo:\n", error);
+      logger.error("Error writing file:\n", error);
       return null;
     }
   };
@@ -89,15 +82,13 @@ class ProductManager {
   getProducts = async () => {
     try {
       const data = await fs.promises.readFile(this.path, this.format);
-      // console.log("Productos:\n", JSON.parse(data));
       return JSON.parse(data);
     } catch (err) {
       if (err.code === "ENOENT") {
         await fs.promises.writeFile(this.path, "[]");
-        // console.log(`Archivo "${this.path}" creado\n`);
         return [];
       } else {
-        console.error("Error al leer el archivo:\n", err);
+        logger.error("Error reading file:\n", err);
       }
     }
   };
@@ -106,9 +97,8 @@ class ProductManager {
     const products = await this.getProducts();
     const product = products.find((p) => p.id === id);
 
-    if (!product) throw new Error(`El producto ${id} no existe\n`);
+    if (!product) throw new Error(`Product ${id} does not exist\n`);
 
-    // console.log(`Producto ${id} buscado:\n${JSON.stringify(product)}:\n`);
     return product;
   };
 
@@ -126,12 +116,8 @@ class ProductManager {
           this.path,
           JSON.stringify(products, null, "\t")
         );
-        // console.log(
-        //   `Producto ${id} editado:\n`,
-        //   JSON.stringify(products[productIndex])
-        // );
       } else {
-        throw new Error("No se encontró el producto\n");
+        throw new Error("Product not found\n");
       }
     } catch (error) {
       return error;
@@ -144,11 +130,10 @@ class ProductManager {
       const productIndex = products.findIndex((product) => product.id === id);
 
       if (productIndex === -1) {
-        throw new Error(`El producto ${id} no se ha encontrado\n`);
+        throw new Error(`Product ${id} not found\n`);
       }
 
       products.splice(productIndex, 1);
-      // console.log(`Producto ${id} eliminado\n`);
       this.products = products;
 
       await fs.promises.writeFile(
@@ -157,7 +142,7 @@ class ProductManager {
       );
       return true;
     } catch (error) {
-      console.error(error.message);
+      logger.error(error.message);
     }
   };
 }

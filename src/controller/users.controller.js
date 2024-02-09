@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import UserDTO from "../dto/users.dto.js";
+import { JWT_SECRET, NODE_ENV } from "../config/config.js";
 
 export const login = (req, res) => {
   if (!req.user) {
@@ -19,14 +20,13 @@ export const login = (req, res) => {
         cart: user.cart,
       },
     },
-    process.env.JWT_SECRET,
+    JWT_SECRET,
     { expiresIn: "8h" }
   );
-  console.log(user);
 
   res.cookie("jwt", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: NODE_ENV === "production",
   });
 
   return res.redirect("/");

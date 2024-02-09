@@ -3,6 +3,7 @@ import MessageModel from "../dao/mongo/models/messages.model.js";
 import jwt from "jsonwebtoken";
 import { CartsRepository, UsersRepository } from "../repositories/index.js";
 import UserDTO from "../dto/users.dto.js";
+import { logger } from "../utils/logger.js";
 
 export const home = async (req, res) => {
   const { limit = 3, page = 1, sort, query, places } = req.query;
@@ -46,7 +47,7 @@ export const home = async (req, res) => {
       isAdmin,
     });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -70,7 +71,7 @@ export const realTimeProducts = async (req, res) => {
     const products = await productsQuery.exec();
     res.render("realTimeProducts", { products, isAdmin });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -102,7 +103,7 @@ export const chat = async (req, res) => {
     const messages = await MessageModel.find().lean().exec();
     res.render("chat", { messages, user });
   } catch (err) {
-    console.error(err);
+    logger.error(err);
     res.status(500).json({ status: "error", error: err.message });
   }
 };
@@ -157,4 +158,15 @@ export const navigation = async (req, res) => {
   const cart = user.cart;
   const isAdmin = user.role === "admin";
   res.render("navigation", { cart, isAdmin });
+};
+
+export const loggerTest = (req, res) => {
+  req.logger.debug("This is a debug log test");
+  req.logger.http("This is a http log test");
+  req.logger.info("This is a info log test");
+  req.logger.warning("This is a warn log test");
+  req.logger.error("This is a error log test");
+  req.logger.fatal("This is a fatal log test");
+
+  return res.render("loggerTest");
 };

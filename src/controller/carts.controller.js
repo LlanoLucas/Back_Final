@@ -246,6 +246,7 @@ export const purchaseCart = async (req, res) => {
         return res.render("purchase", {
           ticket: false,
           unBoughtDetail,
+          unTotal,
         });
 
       for (const product of boughtProducts) {

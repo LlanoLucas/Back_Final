@@ -37,7 +37,7 @@ export const verifyJWT = (req, res, next) => {
       throw new Error("Token not found");
     }
   } catch (error) {
-    console.log("Token verification failed:", error.message);
+    logger.error("Token verification failed:", error.message);
     res.status(401).json({ message: "Token verification failed" });
   }
 };
