@@ -11,7 +11,7 @@ class CartManager {
     try {
       return JSON.parse(await fs.promises.readFile(this.path, this.format));
     } catch (e) {
-      console.log("ERROR: No se encontró el archivo");
+      logger.error("File not found" + this.path);
       return [];
     }
   };

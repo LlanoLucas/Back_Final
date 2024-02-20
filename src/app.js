@@ -54,7 +54,7 @@ app.use("/api/session", sessionRouter);
 mongoose
   .connect(MONGODB_URL, { dbName: MONGODB_NAME })
   .then(() => {
-    logger.info("DB connected").message;
+    logger.info("DB connected");
     const httpServer = app.listen(PORT, () =>
       logger.info(`Listening on port ${PORT}...`)
     );
@@ -82,4 +82,4 @@ mongoose
       });
     });
   })
-  .catch((e) => console.error("Error connecting to the database:", e));
+  .catch((e) => logger.error("Error connecting to the database:", e));
