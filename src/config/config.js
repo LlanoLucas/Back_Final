@@ -11,3 +11,5 @@ export const CLIENT_ID = process.env.CLIENT_ID;
 export const CALLBACK_URL = process.env.CALLBACK_URL;
 export const JWT_SECRET = process.env.JWT_SECRET;
 export const NODE_ENV = process.env.NODE_ENV;
+export const MAILER_USER = process.env.MAILER_USER;
+export const MAILER_PASSWORD = process.env.MAILER_PASSWORD;

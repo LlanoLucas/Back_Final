@@ -1,6 +1,5 @@
 import { Router } from "express";
 import passport from "passport";
-import jwt from "jsonwebtoken";
 import {
   home,
   realTimeProducts,
@@ -12,6 +11,7 @@ import {
   callBack,
   navigation,
   loggerTest,
+  forgotpassword,
 } from "../controller/views.controller.js";
 import { hasToken, auth, verifyJWT } from "../middlewares/jwt.middleware.js";
 import { current } from "../middlewares/current.middleware.js";
@@ -60,6 +60,8 @@ router.get(
   passport.authenticate("github", { scope: ["user:email"], session: false }),
   async (req, res) => {}
 );
+
+router.get("/forgot", forgotpassword);
 
 router.get(
   "/githubcallback",

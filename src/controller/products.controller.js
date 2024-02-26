@@ -79,6 +79,15 @@ export const addProduct = async (req, res) => {
     };
 
     const addedProduct = await ProductsRepository.addProduct(productToAdd);
+    const user = req.user;
+
+    if (!user)
+      res.status(404).json({ status: "error", message: "user not defined" });
+
+    user.role === "premium"
+      ? (addedProduct.owner = user.email)
+      : (addedProduct.owner = "admin");
+    addedProduct.save();
 
     return res.status(201).json({
       message: `Product (ID: ${addedProduct._id}) successfully added`,

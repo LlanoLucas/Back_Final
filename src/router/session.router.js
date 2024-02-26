@@ -1,6 +1,13 @@
 import { Router } from "express";
 import passport from "passport";
-import { login, logout, current } from "../controller/users.controller.js";
+import {
+  login,
+  logout,
+  current,
+  forgot,
+  passwordReset,
+} from "../controller/users.controller.js";
+import { verifyJWT } from "../middlewares/jwt.middleware.js";
 
 const router = Router();
 
@@ -19,11 +26,16 @@ router.post(
   })
 );
 
+router.post("/forgot", forgot);
+
+router.get("/reset-password", passwordReset);
+
 router.get("/logout", logout);
 
 router.get(
   "/current",
   passport.authenticate("jwt", { session: false }),
+  verifyJWT,
   current
 );
 export default router;

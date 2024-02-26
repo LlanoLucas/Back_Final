@@ -173,3 +173,7 @@ export const loggerTest = (req, res) => {
 
   return res.render("loggerTest", { environment });
 };
+
+export const forgotpassword = (req, res) => {
+  res.render("forgot");
+};

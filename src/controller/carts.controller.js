@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import ProductsModel from "../dao/mongo/models/products.model.js";
+import { MAILER_USER } from "../config/config.js";
 import { CartsRepository, ProductsRepository } from "../repositories/index.js";
 import { TicketsRepository } from "../repositories/index.js";
+import { transport, sendMail } from "../utils/transport.js";
 
 export const getCarts = async (req, res) => {
   try {
@@ -266,6 +266,30 @@ export const purchaseCart = async (req, res) => {
       }/${ticket.purchase_datetime.getFullYear()}`;
       const ticketCode = ticket.code;
 
+      sendMail(
+        ticketPurchaser,
+        "PURCHASE TICKET",
+        `
+      <h1 style="background:#93c5fd;text-align:center">CODEDOM</h1>
+      
+      <h2 style="text-align:center">Thank you for your purchase!</h2> <br>
+      
+      <main
+      style="margin-top:2rem;margin-left:auto;margin-right:auto;display:flex;flex-direction:column;gap:0.5rem;width:max-content;padding:1.25rem;margin-bottom:1.25em;border-radius:0.375rem"
+      >
+      <h3 style="text-align:center">YOUR TICKET:</h3>
+  <p style="display:block;text-align:center"><span style="font-weight:700">PURCHASER:</span><br
+    />${ticketPurchaser}</p>
+  <p style="display:block;text-align:center"><span style="font-weight:700">TOTAL:</span><br
+    />$${ticketAmount}</p>
+  <p style="display:block;text-align:center"><span style="font-weight:700">DATE:</span><br
+    />${ticketDate}</p>
+  <p style="display:block;text-align:center"><span style="font-weight:700">CODE:</span><br
+    />${ticketCode}</p>
+</main>
+`
+      );
+
       return res.render("purchase", {
         ticket,
         total,
@@ -292,6 +316,29 @@ export const purchaseCart = async (req, res) => {
       ticket.purchase_datetime.getMonth() + 1
     }/${ticket.purchase_datetime.getFullYear()}`;
     const ticketCode = ticket.code;
+
+    sendMail(
+      ticketPurchaser,
+      "PURCHASE TICKET",
+      `
+    <h1 style="background:#93c5fd;text-align:center">CODEDOM</h1>
+      
+      <h2 style="text-align:center">Thank you for your purchase!</h2> <br>
+      
+      <main
+      style="margin-top:2rem;margin-left:auto;margin-right:auto;display:flex;flex-direction:column;gap:0.5rem;width:max-content;padding:1.25rem;margin-bottom:1.25em;border-radius:0.375rem"
+      >
+      <h3 style="text-align:center">YOUR TICKET:</h3>
+  <p style="display:block;text-align:center"><span style="font-weight:700">PURCHASER:</span><br
+    />${ticketPurchaser}</p>
+  <p style="display:block;text-align:center"><span style="font-weight:700">TOTAL:</span><br
+    />$${ticketAmount}</p>
+  <p style="display:block;text-align:center"><span style="font-weight:700">DATE:</span><br
+    />${ticketDate}</p>
+  <p style="display:block;text-align:center"><span style="font-weight:700">CODE:</span><br
+    />${ticketCode}</p>
+</main>`
+    );
 
     return res.render("purchase", {
       ticket,

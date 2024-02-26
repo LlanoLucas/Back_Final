@@ -25,7 +25,7 @@ const UserModel = mongoose.model(
       type: mongoose.Schema.Types.ObjectId,
       ref: "carts",
     },
-    role: { type: String, default: "user", enum: ["admin", "user"] },
+    role: { type: String, default: "user", enum: ["admin", "premium", "user"] },
     status: { type: Boolean, default: true },
     dateCreaeted: { type: Date, default: Date.now },
     github: { type: Boolean, default: false },

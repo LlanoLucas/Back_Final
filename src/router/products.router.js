@@ -6,16 +6,18 @@ import {
   updateProduct,
   deleteProduct,
 } from "../controller/products.controller.js";
+import { current } from "../middlewares/current.middleware.js";
+import { verifyJWT } from "../middlewares/jwt.middleware.js";
 
 const router = Router();
 
 router.get("/", getProducts);
 router.get("/:pid", getProduct);
 
-router.post("/", addProduct);
+router.post("/", verifyJWT, current("admin", "premium"), addProduct);
 
-router.put("/:pid", updateProduct);
+router.put("/:pid", verifyJWT, current("admin", "premium"), updateProduct);
 
-router.delete("/:pid", deleteProduct);
+router.delete("/:pid", verifyJWT, current("admin"), deleteProduct);
 
 export default router;

@@ -17,7 +17,7 @@ import productsRouter from "./router/products.router.js";
 import cartsRouter from "./router/carts.router.js";
 import sessionRouter from "./router/session.router.js";
 import viewsRouter from "./router/views.router.js";
-import winston from "winston";
+import usersRouter from "./router/users.router.js";
 
 const app = express();
 app.use(express.static(`${__dirname}/public`));
@@ -50,6 +50,7 @@ app.use("/", viewsRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/api/session", sessionRouter);
+app.use("api/users/", usersRouter);
 
 mongoose
   .connect(MONGODB_URL, { dbName: MONGODB_NAME })
