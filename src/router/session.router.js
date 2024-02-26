@@ -7,7 +7,6 @@ import {
   forgot,
   passwordReset,
 } from "../controller/users.controller.js";
-import { verifyJWT } from "../middlewares/jwt.middleware.js";
 
 const router = Router();
 
@@ -35,7 +34,6 @@ router.get("/logout", logout);
 router.get(
   "/current",
   passport.authenticate("jwt", { session: false }),
-  verifyJWT,
   current
 );
 export default router;

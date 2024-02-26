@@ -29,13 +29,13 @@ router.get(
   "/realTimeProducts",
   hasToken,
   passport.authenticate("jwt", { session: false }),
-  current("admin"),
+  current(["admin", "premium"]),
   realTimeProducts
 );
 
 router.get("/cart/:cid", hasToken, verifyJWT, carts);
 
-router.get("/chat", hasToken, verifyJWT, current("user"), chat);
+router.get("/chat", hasToken, verifyJWT, current(["user"]), chat);
 
 router.get("/login", auth, login);
 

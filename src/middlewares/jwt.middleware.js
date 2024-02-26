@@ -1,5 +1,6 @@
 import { JWT_SECRET } from "../config/config.js";
 import jwt from "jsonwebtoken";
+import { logger } from "../utils/logger.js";
 
 export const hasToken = (req, res, next) => {
   if (req.cookies.jwt) return next();

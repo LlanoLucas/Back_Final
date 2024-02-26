@@ -14,10 +14,10 @@ const router = Router();
 router.get("/", getProducts);
 router.get("/:pid", getProduct);
 
-router.post("/", verifyJWT, current("admin", "premium"), addProduct);
+router.post("/", verifyJWT, current(["admin", "premium"]), addProduct);
 
-router.put("/:pid", verifyJWT, current("admin", "premium"), updateProduct);
+router.put("/:pid", verifyJWT, current(["admin", "premium"]), updateProduct);
 
-router.delete("/:pid", verifyJWT, current("admin"), deleteProduct);
+router.delete("/:pid", verifyJWT, current(["admin", "premium"]), deleteProduct);
 
 export default router;

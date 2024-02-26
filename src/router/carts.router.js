@@ -18,19 +18,39 @@ const router = Router();
 router.get("/", getCarts);
 router.get("/:cid", getCart);
 
-router.post("/", verifyJWT, current("user"), createCart);
-router.post("/:cid/products/:pid", verifyJWT, current("user"), addProduct);
-router.get("/:cid/purchase", verifyJWT, current("user"), purchaseCart);
+router.post("/", verifyJWT, current(["user", "premium"]), createCart);
+router.post(
+  "/:cid/products/:pid",
+  verifyJWT,
+  current(["user", "premium"]),
+  addProduct
+);
+router.get(
+  "/:cid/purchase",
+  verifyJWT,
+  current(["user", "premium"]),
+  purchaseCart
+);
 
-router.put("/:cid", verifyJWT, current("user"), modifyCart);
+router.put("/:cid", verifyJWT, current(["user", "premium"]), modifyCart);
 router.put(
   "/:cid/products/:pid",
   verifyJWT,
-  current("user"),
+  current(["user", "premium"]),
   putProductQuantity
 );
 
-router.delete("/:cid/products/:pid", verifyJWT, current("user"), deleteProduct);
-router.delete("/:cid", verifyJWT, current("user"), deleteCartProducts);
+router.delete(
+  "/:cid/products/:pid",
+  verifyJWT,
+  current(["user", "premium"]),
+  deleteProduct
+);
+router.delete(
+  "/:cid",
+  verifyJWT,
+  current(["user", "premium"]),
+  deleteCartProducts
+);
 
 export default router;

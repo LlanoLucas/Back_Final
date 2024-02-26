@@ -67,6 +67,10 @@ export const addProduct = async (req, res) => {
   } = req.body;
 
   try {
+    const user = req.user ?? req.user.user;
+    if (!user)
+      res.status(404).json({ status: "error", message: "user not defined" });
+
     const productToAdd = {
       title: title,
       description: description,
@@ -78,19 +82,14 @@ export const addProduct = async (req, res) => {
       status: status === "true",
     };
 
+    if (user.role === "premium") {
+      productToAdd.owner = user.email;
+    }
+
     const addedProduct = await ProductsRepository.addProduct(productToAdd);
-    const user = req.user;
-
-    if (!user)
-      res.status(404).json({ status: "error", message: "user not defined" });
-
-    user.role === "premium"
-      ? (addedProduct.owner = user.email)
-      : (addedProduct.owner = "admin");
-    addedProduct.save();
 
     return res.status(201).json({
-      message: `Product (ID: ${addedProduct._id}) successfully added`,
+      message: `Product successfully added`,
       product: addedProduct,
     });
   } catch (err) {
@@ -124,9 +123,20 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     const productId = new mongoose.Types.ObjectId(req.params.pid);
-
     if (!mongoose.Types.ObjectId.isValid(req.params.pid)) {
       return res.status(400).json({ error: "Invalid ObjectId" });
+    }
+
+    const product = await ProductsRepository.getProduct(productId);
+
+    const user = req.user;
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    if (user.role != "admin" && product.owner != user.email) {
+      logger.warning("You can only delete your own products");
+      return res
+        .status(400)
+        .json({ error: "You can only delete your own products" });
     }
 
     const deletedProduct = await ProductsRepository.deleteProduct(productId);

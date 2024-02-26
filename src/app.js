@@ -50,7 +50,7 @@ app.use("/", viewsRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRouter);
 app.use("/api/session", sessionRouter);
-app.use("api/users", usersRouter);
+app.use("/api/users", usersRouter);
 
 mongoose
   .connect(MONGODB_URL, { dbName: MONGODB_NAME })

@@ -49,6 +49,17 @@ export const addProduct = async (req, res) => {
         .json({ status: "error", error: "Invalid product" });
     }
 
+    const owner = product.owner;
+    const user = req.user;
+
+    if (owner !== "admin" && owner === user.email) {
+      logger.warning("You cannot add a product you own to your cart");
+      return res.status(400).json({
+        status: "error",
+        error: "You cannot add a product you own to your cart",
+      });
+    }
+
     const cid = req.params.cid;
     const cartExists = await CartsRepository.getCart(cid);
 

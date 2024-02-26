@@ -148,9 +148,20 @@ export const initializePassport = () => {
     "jwt",
     new current(
       {
-        jwtFromRequest: passportJWT.ExtractJwt.fromExtractors([
-          (req) => req?.cookies?.jwt ?? null,
-        ]),
+        jwtFromRequest: (req) => {
+          let token = null;
+          if (req.cookies && req.cookies.jwt) {
+            // Check for JWT token in cookies
+            token = req.cookies.jwt;
+          } else if (req.headers.authorization) {
+            // Check for JWT token in headers
+            const parts = req.headers.authorization.split(" ");
+            if (parts.length === 2 && parts[0] === "Bearer") {
+              token = parts[1];
+            }
+          }
+          return token;
+        },
         secretOrKey: JWT_SECRET,
       },
       (jwt_payload, done) => {

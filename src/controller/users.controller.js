@@ -50,7 +50,9 @@ export const logout = (req, res) => {
 };
 
 export const current = (req, res) => {
-  const user = new UserDTO(req.user.user);
+  let reqUser = req.user ?? req.user.user;
+  if (reqUser.sub != undefined) reqUser = reqUser.user;
+  const user = new UserDTO(reqUser);
   res.json({ status: "success", payload: user });
 };
 
@@ -116,20 +118,25 @@ export const userRole = async (req, res) => {
 
     if (!user)
       return res.status(404).json({ status: "error", msg: "user not found" });
+
     if (!role)
       res.status(404).json({ status: "error", msg: "you must declare a role" });
+
     if (role === "admin")
       res.status(400).json({ status: "error", msg: "You cannot be an admin" });
+
     if (role === user.role)
       res.status(400).json({
         status: "error",
         msg: "Role must be diferent than the previous",
       });
-    if (role != "user" && role != "premium")
+
+    if (role !== "user" && role !== "premium") {
       return res.status(400).json({
         status: "error",
         msg: "The only two options are 'user' or 'premium'",
       });
+    }
 
     user.role = role;
     user.save();
