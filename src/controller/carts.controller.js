@@ -1,4 +1,3 @@
-import { MAILER_USER } from "../config/config.js";
 import { CartsRepository, ProductsRepository } from "../repositories/index.js";
 import { TicketsRepository } from "../repositories/index.js";
 import { sendMail } from "../utils/transport.js";
