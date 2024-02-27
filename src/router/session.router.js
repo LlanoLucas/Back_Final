@@ -27,7 +27,7 @@ router.post(
 
 router.post("/forgot", forgot);
 
-router.get("/reset-password", passwordReset);
+router.post("/reset-password", passwordReset);
 
 router.get("/logout", logout);
 

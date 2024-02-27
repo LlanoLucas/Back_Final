@@ -105,7 +105,6 @@ export const chat = async (req, res) => {
   try {
     let user = req.user;
     if (user.sub !== undefined) user = req.user.user;
-    console.log(user);
     const messages = await MessageModel.find().lean().exec();
     res.render("chat", { messages, user });
   } catch (err) {
@@ -187,5 +186,7 @@ export const forgotpassword = (req, res) => {
 };
 
 export const resetPassword = (req, res) => {
-  res.render("reset-password");
+  const { token } = req.query;
+  console.log(token);
+  res.render("reset-password", { token });
 };

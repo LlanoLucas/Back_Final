@@ -66,7 +66,7 @@ export const forgot = async (req, res) => {
     });
 
   const token = generateToken(user, "1h");
-  const link = `http://127.0.0.1:8080/api/session/reset-password?token=${token}`;
+  const link = `http://127.0.0.1:8080/reset-password?token=${token}`;
 
   sendMail(
     email,
@@ -110,10 +110,21 @@ export const passwordReset = async (req, res) => {
     user.password = createHash(password);
     user.save();
 
+    sendMail(
+      user.email,
+      "PASSWORD SUCCESSFULLY RESET",
+      `
+    <h1 style="background:#93c5fd;text-align:center">CODEDOM</h1>
+  <h2>Your password has ben successfuly reset.</h2><br>
+  <p>If it wasn't you, <a href="http://127.0.0.1:8080/forgot" class="italic">click here</a> to reset your password again.</p>
+  `
+    );
+
     return res
       .status(200)
       .json({ status: "success", msg: "Password succesfully reset" });
   } catch (error) {
+    if (error.message === "jwt expired") return res.redirect("/forgot");
     return res.status(500).json({ status: "error", msg: error.message });
   }
 };
