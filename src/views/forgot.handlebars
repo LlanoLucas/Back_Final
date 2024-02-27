@@ -1,5 +1,23 @@
-<form action="api/session/forgot" method="POST">
-  <label for="title">User email:</label>
-  <input type="email" id="email" name="email" />
-  <button type="submit">Submit</button>
+<form
+  action="api/session/forgot"
+  method="POST"
+  class="mx-auto mt-12 flex flex-col gap-2 rounded-md border-2 border-black p-4 w-1/3 bg-blue-100"
+>
+  <h1 class="text-center font-semibold text-xl pb-2">SEND LINK TO RESET PASSWORD</h1>
+  <div class="flex w-full">
+    <label
+      for="title"
+      class="form-label w-28 text-center rounded-sm border-2 border-black"
+    >User email:</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      class="ml-2 w-full form-control bg-blue-100 border-b-2 border-blue-300 focus:outline-none focus:border-blue-400 ease-in-out"
+    />
+  </div>
+  <button
+    type="submit"
+    class="form-control text-lg mt-1 bg-blue-200 font-semibold rounded-sm border-2 border-black px-1 py-.5 w-full hover:bg-blue-50 active:bg-blue-200 transition-all duration-300"
+  >Submit</button>
 </form>
