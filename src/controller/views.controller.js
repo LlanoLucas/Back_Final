@@ -29,10 +29,12 @@ export const home = async (req, res) => {
 
   if (places && places === "true") queryConditions.stock = { $gt: 0 };
 
-  const user = req.user.user;
+  let user = req.user.user;
+
+  if (user.sub !== undefined) user = req.user.user.user;
 
   if (!user.cart && user.role !== "admin") {
-    const dbUser = await UsersRepository.getUserByEmail(req.user.user.email);
+    const dbUser = await UsersRepository.getUserByEmail(user.email);
     user.cart = dbUser.cart.toString();
   }
   const products = await ProductsModel.paginate(queryConditions, options);
@@ -45,7 +47,7 @@ export const home = async (req, res) => {
       sortQuery,
       queryQuery,
       queryPlaces,
-      user: req.user.user,
+      user,
       isAdmin,
     });
   } catch (error) {
@@ -101,7 +103,9 @@ export const carts = async (req, res) => {
 
 export const chat = async (req, res) => {
   try {
-    const user = req.user ?? req.user.user;
+    let user = req.user;
+    if (user.sub !== undefined) user = req.user.user;
+    console.log(user);
     const messages = await MessageModel.find().lean().exec();
     res.render("chat", { messages, user });
   } catch (err) {
@@ -119,8 +123,10 @@ export const register = (req, res) => {
 };
 
 export const profile = (req, res) => {
-  const isAdmin = req.user.user.role === "admin";
-  const user = new UserDTO(req.user.user ?? req.user);
+  let reqUser = req.user.user;
+  if (reqUser.sub !== undefined) reqUser = req.user.user.user;
+  const isAdmin = reqUser.role === "admin";
+  const user = new UserDTO(reqUser);
   return res.render("profile", {
     user,
     isAdmin,
@@ -155,10 +161,12 @@ export const callBack = async (req, res) => {
 };
 
 export const navigation = async (req, res) => {
-  const user = await UsersRepository.getUserByEmail(req.user.user.email);
+  let reqUser = req.user.user;
+  if (reqUser.sub !== undefined) reqUser = req.user.user.user;
+  const user = await UsersRepository.getUserByEmail(reqUser.email);
   const cart = user.cart;
   const isAdmin = user.role === "admin";
-  res.render("navigation", { cart, isAdmin });
+  res.render("navigation", { cart, isAdmin, user });
 };
 
 export const loggerTest = (req, res) => {

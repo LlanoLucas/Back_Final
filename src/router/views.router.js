@@ -36,7 +36,7 @@ router.get(
 
 router.get("/cart/:cid", hasToken, verifyJWT, carts);
 
-router.get("/chat", hasToken, verifyJWT, current(["user"]), chat);
+router.get("/chat", hasToken, verifyJWT, current(["user", "premium"]), chat);
 
 router.get("/login", auth, login);
 
