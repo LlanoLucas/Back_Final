@@ -1,7 +1,7 @@
 import { MAILER_USER } from "../config/config.js";
 import { CartsRepository, ProductsRepository } from "../repositories/index.js";
 import { TicketsRepository } from "../repositories/index.js";
-import { transport, sendMail } from "../utils/transport.js";
+import { sendMail } from "../utils/transport.js";
 
 export const getCarts = async (req, res) => {
   try {
