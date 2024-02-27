@@ -13,7 +13,7 @@ export const login = (req, res) => {
   }
   const user = req.user.user;
 
-  const token = jwt.sign(
+  const token = generateToken(
     {
       sub: user._id,
       user: {
@@ -25,8 +25,7 @@ export const login = (req, res) => {
         cart: user.cart,
       },
     },
-    JWT_SECRET,
-    { expiresIn: "8h" }
+    "8h"
   );
 
   res.cookie("jwt", token, {
@@ -90,7 +89,9 @@ export const passwordReset = async (req, res) => {
     const { token } = req.query;
     const { password, confirm } = req.body;
     const decodedToken = jwt.verify(token, JWT_SECRET);
-    const user = await UsersRepository.getUserByEmail(decodedToken._doc.email);
+    const user = await UsersRepository.getUserByEmail(
+      decodedToken.user.email ?? decodedToken._doc.email
+    );
 
     if (!password)
       return res.status(401).json({ msg: "You must provide a new password" });

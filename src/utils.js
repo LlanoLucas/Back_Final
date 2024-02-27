@@ -7,6 +7,3 @@ const __dirname = dirname(__filename);
 
 export default __dirname;
 export const PORT = process.env.PORT || 8080;
-export const generateToken = (user) => {
-  return jwt.sign({ user }, "jwtsecret", { expiresIn: "24h" });
-};

@@ -13,6 +13,7 @@ import {
   CALLBACK_URL,
   JWT_SECRET,
 } from "./config.js";
+import { generateToken } from "../utils/token.generate.js";
 
 const LocalStrategy = local.Strategy;
 const current = passportJWT.Strategy;
@@ -87,7 +88,7 @@ export const initializePassport = () => {
           const user = await UserModel.findOne({ email: profile._json.email });
 
           if (user) {
-            const token = jwt.sign(
+            const token = generateToken(
               {
                 sub: user._id,
                 user: {
@@ -99,8 +100,7 @@ export const initializePassport = () => {
                   image: user.image,
                 },
               },
-              JWT_SECRET,
-              { expiresIn: "8h" }
+              "8h"
             );
 
             user.token = token;
@@ -117,7 +117,7 @@ export const initializePassport = () => {
               github: true,
             });
 
-            const token = jwt.sign(
+            const token = generateToken(
               {
                 sub: newUser._id,
                 user: {
@@ -129,8 +129,7 @@ export const initializePassport = () => {
                   cart: newUser.cart,
                 },
               },
-              JWT_SECRET,
-              { expiresIn: "8h" }
+              "8h"
             );
 
             newUser.token = token;
@@ -151,10 +150,8 @@ export const initializePassport = () => {
         jwtFromRequest: (req) => {
           let token = null;
           if (req.cookies && req.cookies.jwt) {
-            // Check for JWT token in cookies
             token = req.cookies.jwt;
           } else if (req.headers.authorization) {
-            // Check for JWT token in headers
             const parts = req.headers.authorization.split(" ");
             if (parts.length === 2 && parts[0] === "Bearer") {
               token = parts[1];

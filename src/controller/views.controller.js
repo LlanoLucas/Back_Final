@@ -5,6 +5,7 @@ import { CartsRepository, UsersRepository } from "../repositories/index.js";
 import UserDTO from "../dto/users.dto.js";
 import { logger } from "../utils/logger.js";
 import { JWT_SECRET, NODE_ENV } from "../config/config.js";
+import { generateToken } from "../utils/token.generate.js";
 
 export const home = async (req, res) => {
   const { limit = 3, page = 1, sort, query, places } = req.query;
@@ -131,7 +132,7 @@ export const callBack = async (req, res) => {
 
   const user = req.user;
 
-  const token = jwt.sign(
+  const token = generateToken(
     {
       sub: user._id,
       user: {
@@ -142,8 +143,7 @@ export const callBack = async (req, res) => {
         role: user.role,
       },
     },
-    JWT_SECRET,
-    { expiresIn: "1h" }
+    "1h"
   );
 
   res.cookie("jwt", token, {
