@@ -177,3 +177,7 @@ export const loggerTest = (req, res) => {
 export const forgotpassword = (req, res) => {
   res.render("forgot");
 };
+
+export const resetPassword = (req, res) => {
+  res.render("reset-password");
+};

@@ -5,7 +5,7 @@ import { JWT_SECRET, NODE_ENV, MAILER_USER } from "../config/config.js";
 import { sendMail } from "../utils/transport.js";
 import { generateToken } from "../utils/token.generate.js";
 import { logger } from "../utils/logger.js";
-import { createHash } from "../utils/bcrypt.password.js";
+import { createHash, isValidPassword } from "../utils/bcrypt.password.js";
 
 export const login = (req, res) => {
   if (!req.user) {
@@ -67,7 +67,7 @@ export const forgot = async (req, res) => {
     });
 
   const token = generateToken(user, "1h");
-  const link = `https://127.0.0.1:8080/api/session/reset-password?token=${token}`;
+  const link = `http://127.0.0.1:8080/api/session/reset-password?token=${token}`;
 
   sendMail(
     email,
@@ -75,38 +75,45 @@ export const forgot = async (req, res) => {
     `
     <h1 style="background:#93c5fd;text-align:center">CODEDOM</h1>
   <p>Here is the link to reset your password:</p><br>
-  <a href="${link}">127.0.0.1/api/session/reset-password?token=...</a><br>
+  <a href="${link}">http://127.0.0.1/api/session/reset-password?token=...</a><br>
   <p style="color:red">Remember that it will expire in 1 hour.</p>
   `
   );
 
   return res
     .status(200)
-    .json({ status: "success", msg: "Email sent", payload: { email, token } });
+    .json({ status: "success", msg: "Email sent", payload: { email, link } });
 };
 
 export const passwordReset = async (req, res) => {
   try {
     const { token } = req.query;
-    const { password } = req.body;
-    const email = jwt.verify(token, JWT_SECRET);
+    const { password, confirm } = req.body;
+    const decodedToken = jwt.verify(token, JWT_SECRET);
+    const user = await UsersRepository.getUserByEmail(decodedToken._doc.email);
 
-    const user = UsersRepository.getUserByEmail(email);
+    if (!password)
+      return res.status(401).json({ msg: "You must provide a new password" });
+    if (!confirm)
+      return res.status(401).json({ msg: "You must confirm your password" });
+    if (password !== confirm)
+      return res.status(401).json({ msg: "The passwords do not match" });
 
-    if (password === user.password)
-      res.status(400).json({
+    if (isValidPassword(password, user.password)) {
+      return res.status(400).json({
         status: "error",
-        msg: "The password must be different than the previous one",
+        msg: "The password must be different than the previous password",
       });
+    }
 
     user.password = createHash(password);
     user.save();
+
     return res
       .status(200)
       .json({ status: "success", msg: "Password succesfully reset" });
   } catch (error) {
-    logger.error(error);
-    res.status(error.statusCode).json({ status: "error", msg: error });
+    return res.status(500).json({ status: "error", msg: error.message });
   }
 };
 
