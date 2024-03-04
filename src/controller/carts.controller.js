@@ -110,22 +110,18 @@ export const putProductQuantity = async (req, res) => {
     const { cid, pid } = req.params;
     const { quantity } = req.body;
 
-    // Check if quantity is provided and is a valid integer
     if (!quantity || !Number.isInteger(quantity)) {
       return res.status(400).json({
         error: "Quantity is obligatory and must be an integer",
       });
     }
 
-    // Retrieve the cart
     const cart = await CartsRepository.getCart(cid);
 
-    // Check if the cart exists
     if (!cart) {
       return res.status(404).json({ error: "Cart not found" });
     }
 
-    // Update the product quantity in the cart
     const updatedCart = await CartsRepository.putProductQuantity(
       cid,
       pid,
