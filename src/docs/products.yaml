@@ -29,6 +29,13 @@ paths:
           application/json:
             schema:
               $ref: "#components/requestBodies/createProduct"
+      responses:
+        "200":
+          description: Product returned successfully
+        "404":
+          description: No se encontro la mascota
+        "500":
+          description: Internal server error
   /api/products/{pid}:
     get:
       summary: Gets a product by ID
@@ -144,13 +151,6 @@ paths:
       summary: Create cart
       tags:
         - Carts
-      parameters:
-        - name: cid
-          in: path
-          required: true
-          description: ID of the cart
-          schema:
-            type: string
       responses:
         "200":
           description: Cart created successfully
@@ -405,32 +405,29 @@ components:
       example:
         _id: 65bc23f8438ecc80b009f95e
         products: [{ product: 655bba12254bd625e9089df0, quantity: 1 }]
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Description of the error
+
   requestBodies:
     createProduct:
       type: object
       properties:
+        title: string
+        description: string
+        price: number
+        thumbnails: [string]
+        category: string
+        stock: number
+        code: string
+      example:
         title: Swagger Product
-        description: Created via swagger
+        description: Created via swagger.
         price: 1
         thumbnails: [swagger.webp]
-        category: test
+        category: Test
         stock: 1
         code: swagger01
-        status: false
-      example:
-        title: Data Science
-        description: Master data analysis, stats, and ML for making informed decisions.
-        price: 300
-        thumbnails: [data-science.webp, data-science1.webp]
-        category: Data
-        stock: 26
-        code: data01
-        status: true
-        owner: admin
-      responses:
-        "200":
-          description: Product returned successfully
-        "404":
-          description: No se encontro la mascota
-        "500":
-          description: Internal server error

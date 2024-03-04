@@ -88,7 +88,7 @@ export const addProduct = async (req, res) => {
 
     const addedProduct = await ProductsRepository.addProduct(productToAdd);
 
-    return res.status(201).json({
+    return res.status(200).json({
       message: `Product successfully added`,
       product: addedProduct,
     });
@@ -129,10 +129,13 @@ export const deleteProduct = async (req, res) => {
 
     const product = await ProductsRepository.getProduct(productId);
 
-    const user = req.user;
+    let user = req.user;
     if (!user) return res.status(404).json({ error: "User not found" });
+    console.log(user);
 
-    if (user.role != "admin" && product.owner != user.email) {
+    if (user.sub !== null) user = user.user;
+
+    if (user.role !== "admin" && product.owner !== user.email) {
       logger.warning("You can only delete your own products");
       return res
         .status(400)

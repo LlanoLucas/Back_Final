@@ -179,7 +179,7 @@ export const deleteCartProducts = async (req, res) => {
     if (!cart)
       return res.status(404).json({ msg: "Error to complete the action" });
 
-    res.status(200).json({ status: "success", payload: updatedCart });
+    res.status(200).json({ status: "success", payload: cart });
   } catch (error) {
     res.status(500).json({ status: "error", error: error.message });
   }
