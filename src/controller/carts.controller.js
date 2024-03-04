@@ -77,14 +77,26 @@ export const addProduct = async (req, res) => {
 export const modifyCart = async (req, res) => {
   try {
     const cid = req.params.cid;
+    const cart = await CartsRepository.getCart(cid);
 
-    const cart = await CartsRepository.getCartById(cid);
     if (!cart) {
       return res.status(404).json({ status: "error", error: "Cart not found" });
     }
 
-    const products = req.body;
-    cart.products = products;
+    const { products } = req.body;
+    if (!Array.isArray(products)) {
+      return res
+        .status(400)
+        .json({ status: "error", error: "Invalid products data" });
+    }
+
+    const updatedProducts = products.map((item) => ({
+      product: item.productId,
+      quantity: item.quantity,
+    }));
+
+    cart.products = updatedProducts;
+
     await cart.save();
 
     res.status(200).json({ status: "success", payload: cart });
@@ -98,23 +110,37 @@ export const putProductQuantity = async (req, res) => {
     const { cid, pid } = req.params;
     const { quantity } = req.body;
 
-    if (!quantity || !Number.isInteger(quantity))
-      return res.status(404).json({
-        msg: "Quantity is obligatory and must be an integer",
+    // Check if quantity is provided and is a valid integer
+    if (!quantity || !Number.isInteger(quantity)) {
+      return res.status(400).json({
+        error: "Quantity is obligatory and must be an integer",
       });
+    }
 
-    const cartExists = CartsRepository.getCart(cid);
+    // Retrieve the cart
+    const cart = await CartsRepository.getCart(cid);
 
-    if (!cartExists)
-      return res.status(404).json({ status: "error", error: "Cart not found" });
+    // Check if the cart exists
+    if (!cart) {
+      return res.status(404).json({ error: "Cart not found" });
+    }
 
-    const cart = await CartsRepository.putProductQuantity(cid, pid, quantity);
+    // Update the product quantity in the cart
+    const updatedCart = await CartsRepository.putProductQuantity(
+      cid,
+      pid,
+      quantity
+    );
 
-    if (!cart)
-      return res.status(404).json({ msg: "Error to complete the action" });
+    if (!updatedCart) {
+      return res
+        .status(500)
+        .json({ error: "Failed to update product quantity in the cart" });
+    }
 
-    return res.status(200).json({ status: "success", payload: updatedProduct });
+    return res.status(200).json({ status: "success", payload: updatedCart });
   } catch (error) {
+    console.error("Error in putProductQuantity:", error);
     res.status(500).json({ status: "error", error: error.message });
   }
 };

@@ -2,8 +2,7 @@ import CartsModel from "./models/carts.model.js";
 
 export const getCarts = async () => await CartsModel.find().lean().exec();
 
-export const getCart = async (cid) =>
-  await CartsModel.findById(cid).lean().exec();
+export const getCart = async (cid) => await CartsModel.findById(cid).exec();
 
 export const createCart = async (data) => await CartsModel.create(data);
 
@@ -28,12 +27,33 @@ export const addProduct = async (cid, pid) => {
   return cart;
 };
 
-export const putProductQuantity = async (cid, pid, quantity) =>
-  await CartsModel.findOneAndUpdate(
-    { _id: cid, "products.id": pid },
-    { $set: { "products.$.quantity": quantity } },
-    { new: true }
-  );
+export const putProductQuantity = async (cid, pid, quantity) => {
+  try {
+    const cart = await CartsModel.findById(cid);
+    if (!cart) {
+      return null;
+    }
+
+    // Find the product with the specified ID in the cart
+    const productToUpdate = cart.products.find(
+      (product) => product.product._id.toString() === pid
+    );
+    console.log(productToUpdate);
+    if (!productToUpdate) {
+      return null; // Product not found in the cart
+    }
+
+    // Update the quantity of the product
+    productToUpdate.quantity = quantity;
+
+    // Save the updated cart
+    const updatedCart = await cart.save();
+    console.log(updatedCart);
+    return updatedCart;
+  } catch (error) {
+    throw new Error("Failed to update product quantity");
+  }
+};
 
 export const deleteProduct = async (cid, pid) =>
   await CartsModel.findByIdAndUpdate(

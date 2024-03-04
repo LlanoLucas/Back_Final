@@ -1,0 +1,436 @@
+paths:
+  /api/products:
+    get:
+      summary: Gets all products (paginated with mongoose-paginate-v2)
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Products returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#components/schemas/Product"
+        "400":
+          description: Invalid request
+        "404":
+          description: Product not found
+        "500":
+          description: Internal server error.
+    post:
+      summary: Create product
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#components/requestBodies/createProduct"
+  /api/products/{pid}:
+    get:
+      summary: Gets a product by ID
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID of the product
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product returned successfully
+        "404":
+          description: Product not found
+        "500":
+          description: Internal server error
+    /api/products/{pid}:
+    put:
+      summary: Update product details
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID of the product
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: New title of the product
+                description:
+                  type: string
+                  description: New description of the product
+                price:
+                  type: number
+                  description: New price of the product
+                thumbnails:
+                  type: array
+                  items:
+                    type: string
+                  description: New array of thumbnails for the product
+                category:
+                  type: string
+                  description: New category of the product
+                stock:
+                  type: number
+                  description: New stock of the product
+                code:
+                  type: string
+                  description: New identification code of the product
+                status:
+                  type: boolean
+                  description: New status of the product
+      responses:
+        "200":
+          description: Product details updated successfully
+        "404":
+          description: Product not found
+        "500":
+          description: Internal server error
+
+    delete:
+      summary: Delete product
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: ID of the product
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product successfully deleted
+        "404":
+          description: Product not found
+        "500":
+          description: Internal server error
+
+  /api/carts:
+    get:
+      summary: Gets all carts
+      tags:
+        - Carts
+      responses:
+        "200":
+          description: Carts returned successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#components/schemas/Cart"
+        "400":
+          description: Invalid request
+        "404":
+          description: Carts not found
+        "500":
+          description: Internal server error
+    post:
+      summary: Create cart
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Cart created successfully
+        "500":
+          description: Internal server error
+  /api/carts/{cid}:
+    get:
+      summary: Gets a cart by ID
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Cart returned successfully
+        "404":
+          description: Cart not found
+        "500":
+          description: Internal server error
+
+    put:
+      summary: Modify cart by adding or updating products
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                products:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: string
+                      quantity:
+                        type: integer
+                        minimum: 1
+      responses:
+        "200":
+          description: Cart modified successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        "404":
+          description: Cart not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+    delete:
+      summary: Delete cart
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Cart successfully deleted
+        "404":
+          description: Cart not found
+        "500":
+          description: Internal server error
+
+  /api/carts/{cid}/products/{pid}:
+    post:
+      summary: Add product to cart
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: ID of the product
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product added to cart successfully
+        "500":
+          description: Internal server error
+
+    put:
+      summary: Update product quantity in cart
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: ID of the product
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  description: New quantity of the product in the cart
+      responses:
+        "200":
+          description: Product quantity updated successfully
+        "404":
+          description: Cart or product not found
+        "500":
+          description: Internal server error
+
+    delete:
+      summary: Remove product from cart
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: ID of the product
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product removed from cart successfully
+        "404":
+          description: Cart or product not found
+        "500":
+          description: Internal server error
+
+  /api/carts/{cid}/purchase:
+    get:
+      summary: Purchase all products in cart
+      tags:
+        - Carts
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Products in cart purchased successfully
+        "404":
+          description: Cart not found
+        "500":
+          description: Internal server error
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Auto generated ID by mongo
+        title:
+          type: string
+          description: Name of the course
+        description:
+          type: string
+          description: Description of the course
+        price:
+          type: number
+          description: Price of the course
+        thumbnails:
+          type: array
+          description: Array of thumbnails for the course
+        category:
+          type: string
+          description: Name of the category of the course
+        stock:
+          type: number
+          description: Places left of the course
+        code:
+          type: string
+          description: Identification code of the course
+        status:
+          type: boolean
+          description: Status of the course
+        owner:
+          type: string
+          description: Creator of the course
+      example:
+        _id: ObjectId("655bba12254bd625e9089def")
+        title: Backend Development
+        description: Learn to build modern apps with Node.js and MongoDB
+        price: 250
+        thumbnails: [0: "backend.webp", 1: "backend1.webp"]
+        category: Programming
+        stock: 4
+        code: back01
+        status: true
+        owner: admin
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Auto generated ID by mongo
+        products:
+          type: array
+          desription: Array of the products in the cart
+      example:
+        _id: 65bc23f8438ecc80b009f95e
+        products: [{ product: 655bba12254bd625e9089df0, quantity: 1 }]
+  requestBodies:
+    createProduct:
+      type: object
+      properties:
+        title: Swagger Product
+        description: Created via swagger
+        price: 1
+        thumbnails: [swagger.webp]
+        category: test
+        stock: 1
+        code: swagger01
+        status: false
+      example:
+        title: Data Science
+        description: Master data analysis, stats, and ML for making informed decisions.
+        price: 300
+        thumbnails: [data-science.webp, data-science1.webp]
+        category: Data
+        stock: 26
+        code: data01
+        status: true
+        owner: admin
+      responses:
+        "200":
+          description: Product returned successfully
+        "404":
+          description: No se encontro la mascota
+        "500":
+          description: Internal server error

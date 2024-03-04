@@ -28,3 +28,11 @@
 {"level":"error"}
 {"level":"error"}
 {"level":"error"}
+{"level":"error","message":"This is a error log test"}
+{"level":"fatal","message":"This is a fatal log test"}
+{"level":"error","message":"Token verification failed:"}
+{"level":"error","message":"Token verification failed:"}
+{"level":"error","message":"Token verification failed:"}
+{"level":"error","message":"Token verification failed:"}
+{"level":"error","message":"Token verification failed:"}
+{"level":"error","message":"Token verification failed:"}

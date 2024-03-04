@@ -10,6 +10,8 @@ import session from "express-session";
 import passport from "passport";
 import { initializePassport } from "./config/passport.config.js";
 import cookieParser from "cookie-parser";
+import swaggerJSDoc from "swagger-jsdoc";
+import SwaggerUiExpress from "swagger-ui-express";
 import { addLogger, logger } from "./utils/logger.js";
 
 import MessageModel from "./dao/mongo/models/messages.model.js";
@@ -38,6 +40,20 @@ app.use(
 );
 
 initializePassport();
+
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.1",
+    info: {
+      title: "CODEDOM Documentation",
+      description: "The documentation for a courses platform 🧑‍🎓",
+    },
+  },
+  apis: [`${__dirname}/docs/**/*.yaml`],
+};
+const specs = swaggerJSDoc(swaggerOptions);
+
+app.use("/apidocs", SwaggerUiExpress.serve, SwaggerUiExpress.setup(specs));
 
 app.use(passport.initialize());
 app.use(passport.session());
