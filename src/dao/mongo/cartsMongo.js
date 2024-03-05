@@ -34,21 +34,16 @@ export const putProductQuantity = async (cid, pid, quantity) => {
       return null;
     }
 
-    // Find the product with the specified ID in the cart
     const productToUpdate = cart.products.find(
       (product) => product.product._id.toString() === pid
     );
-    console.log(productToUpdate);
     if (!productToUpdate) {
-      return null; // Product not found in the cart
+      return null;
     }
 
-    // Update the quantity of the product
     productToUpdate.quantity = quantity;
 
-    // Save the updated cart
     const updatedCart = await cart.save();
-    console.log(updatedCart);
     return updatedCart;
   } catch (error) {
     throw new Error("Failed to update product quantity");

@@ -187,6 +187,5 @@ export const forgotpassword = (req, res) => {
 
 export const resetPassword = (req, res) => {
   const { token } = req.query;
-  console.log(token);
   res.render("reset-password", { token });
 };
