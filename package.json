@@ -4,8 +4,10 @@
   "main": "productManager.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "dotenv -e .env node f.js"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "daotest": "mocha src/test/dao.test.js",
+    "supertest": "mocha src/test/supertest.test.js"
   },
   "keywords": [],
   "author": "Lucas Llano",
@@ -19,7 +21,7 @@
     "express-session": "^1.18.0",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.2.0",
+    "mongoose": "^8.2.1",
     "mongoose-paginate-v2": "^1.8.0",
     "nodemailer": "^6.9.11",
     "nodemon": "^3.1.0",
@@ -33,5 +35,10 @@
     "swagger-ui-express": "^5.0.0",
     "winston": "^3.12.0"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "chai": "^5.1.0",
+    "mocha": "^10.3.0",
+    "supertest": "^6.3.4"
+  }
 }

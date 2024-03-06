@@ -4,7 +4,9 @@ export const getCarts = async () => await CartsModel.find().lean().exec();
 
 export const getCart = async (cid) => await CartsModel.findById(cid).exec();
 
-export const createCart = async (data) => await CartsModel.create(data);
+export const createCart = async (data) => {
+  return await CartsModel.create(data);
+};
 
 export const addProduct = async (cid, pid) => {
   const cart = await CartsModel.findById(cid);
@@ -31,6 +33,7 @@ export const putProductQuantity = async (cid, pid, quantity) => {
   try {
     const cart = await CartsModel.findById(cid);
     if (!cart) {
+      console.log("cart not found");
       return null;
     }
 
@@ -38,6 +41,7 @@ export const putProductQuantity = async (cid, pid, quantity) => {
       (product) => product.product._id.toString() === pid
     );
     if (!productToUpdate) {
+      console.log("product not found");
       return null;
     }
 
@@ -57,12 +61,14 @@ export const deleteProduct = async (cid, pid) =>
     { new: true }
   );
 
-export const deleteCartProducts = async (cid) =>
-  await CartsModel.findOneAndUpdate(
+export const deleteCartProducts = async (cid) => {
+  return await CartsModel.findOneAndUpdate(
     { _id: cid },
     { $set: { products: [] } },
     { new: true }
   );
+};
 
-export const deleteCart = async (cid) =>
-  await CartsModel.findByIdAndDelete(cid);
+export const deleteCart = async (cid) => {
+  return await CartsModel.findByIdAndDelete(cid);
+};
