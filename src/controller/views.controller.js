@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { CartsRepository, UsersRepository } from "../repositories/index.js";
 import UserDTO from "../dto/users.dto.js";
 import { logger } from "../utils/logger.js";
-import { JWT_SECRET, NODE_ENV } from "../config/config.js";
+import { NODE_ENV } from "../config/config.js";
 import { generateToken } from "../utils/token.generate.js";
 
 export const home = async (req, res) => {
@@ -29,14 +29,13 @@ export const home = async (req, res) => {
 
   if (places && places === "true") queryConditions.stock = { $gt: 0 };
 
-  let user = req.user.user;
-
-  if (user.sub !== undefined) user = req.user.user.user;
+  let user = req.user.user.user;
 
   if (!user.cart && user.role !== "admin") {
     const dbUser = await UsersRepository.getUserByEmail(user.email);
     user.cart = dbUser.cart.toString();
   }
+
   const products = await ProductsModel.paginate(queryConditions, options);
 
   const isAdmin = user.role === "admin";
@@ -70,7 +69,14 @@ export const realTimeProducts = async (req, res) => {
       productsQuery.sort({ price: sort });
     }
 
-    const isAdmin = req.user.user.role === "admin";
+    let user = req.user.user.user;
+
+    if (!user.cart && user.role !== "admin") {
+      const dbUser = await UsersRepository.getUserByEmail(user.email);
+      user.cart = dbUser.cart.toString();
+    }
+
+    const isAdmin = user.role === "admin";
 
     const products = await productsQuery.exec();
     res.render("realTimeProducts", { products, isAdmin });
@@ -87,15 +93,17 @@ export const carts = async (req, res) => {
 
     if (!cart) return res.status(404).json({ error: "Cart not found" });
 
-    cart.products.forEach((product) => {
+    const modifiedCart = JSON.parse(JSON.stringify(cart));
+
+    modifiedCart.products.forEach((product) => {
       product.totalPrice = product.quantity * product.product.price;
     });
 
-    const grandTotal = cart.products.reduce((total, product) => {
+    const grandTotal = modifiedCart.products.reduce((total, product) => {
       return total + (product.totalPrice || 0);
     }, 0);
 
-    res.render("carts", { cart, grandTotal });
+    res.render("carts", { cart: modifiedCart, grandTotal });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -103,8 +111,11 @@ export const carts = async (req, res) => {
 
 export const chat = async (req, res) => {
   try {
-    let user = req.user;
-    if (user.sub !== undefined) user = req.user.user;
+    let user = req.user.user;
+    if (!user.cart && user.role !== "admin") {
+      const dbUser = await UsersRepository.getUserByEmail(user.email);
+      user.cart = dbUser.cart.toString();
+    }
     const messages = await MessageModel.find().lean().exec();
     res.render("chat", { messages, user });
   } catch (err) {
@@ -121,9 +132,12 @@ export const register = (req, res) => {
   return res.render("register", {});
 };
 
-export const profile = (req, res) => {
-  let reqUser = req.user.user;
-  if (reqUser.sub !== undefined) reqUser = req.user.user.user;
+export const profile = async (req, res) => {
+  let reqUser = req.user.user.user;
+  if (!reqUser.cart && reqUser.role !== "admin") {
+    const dbUser = await UsersRepository.getUserByEmail(reqUser.email);
+    reqUser.cart = dbUser.cart.toString();
+  }
   const isAdmin = reqUser.role === "admin";
   const user = new UserDTO(reqUser);
   return res.render("profile", {
@@ -148,7 +162,7 @@ export const callBack = async (req, res) => {
         role: user.role,
       },
     },
-    "1h"
+    "8h"
   );
 
   res.cookie("jwt", token, {
@@ -160,12 +174,13 @@ export const callBack = async (req, res) => {
 };
 
 export const navigation = async (req, res) => {
-  let reqUser = req.user.user;
-  if (reqUser.sub !== undefined) reqUser = req.user.user.user;
-  const user = await UsersRepository.getUserByEmail(reqUser.email);
-  const cart = user.cart;
+  let user = req.user.user.user;
+  if (!user.cart && user.role !== "admin") {
+    const dbUser = await UsersRepository.getUserByEmail(user.email);
+    user.cart = dbUser.cart.toString();
+  }
   const isAdmin = user.role === "admin";
-  res.render("navigation", { cart, isAdmin, user });
+  res.render("navigation", { isAdmin, user });
 };
 
 export const loggerTest = (req, res) => {

@@ -49,7 +49,7 @@ export const addProduct = async (req, res) => {
     }
 
     const owner = product.owner;
-    const user = req.user;
+    const user = req.user.user;
 
     if (owner !== "admin" && owner === user.email) {
       logger.warning("You cannot add a product you own to your cart");
@@ -239,7 +239,8 @@ export const purchaseCart = async (req, res) => {
       unTotal += productData.price * product[1];
     }
 
-    const purchaser = req.user.email;
+    const user = req.user.user;
+    const purchaser = user.email;
 
     let boughtDetail = [];
 

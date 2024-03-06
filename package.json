@@ -6,8 +6,7 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "daotest": "mocha src/test/dao.test.js",
-    "supertest": "mocha src/test/supertest.test.js"
+    "test": "mocha src/test/dao.test.js"
   },
   "keywords": [],
   "author": "Lucas Llano",
@@ -38,7 +37,6 @@
   "description": "",
   "devDependencies": {
     "chai": "^5.1.0",
-    "mocha": "^10.3.0",
-    "supertest": "^6.3.4"
+    "mocha": "^10.3.0"
   }
 }

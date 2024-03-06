@@ -67,7 +67,7 @@ export const addProduct = async (req, res) => {
   } = req.body;
 
   try {
-    const user = req.user ?? req.user.user;
+    const user = req.user.user;
     if (!user)
       res.status(404).json({ status: "error", message: "user not defined" });
 
@@ -129,7 +129,7 @@ export const deleteProduct = async (req, res) => {
 
     const product = await ProductsRepository.getProduct(productId);
 
-    let user = req.user;
+    let user = req.user.user;
     if (!user) return res.status(404).json({ error: "User not found" });
 
     if (user.sub) user = user.user;

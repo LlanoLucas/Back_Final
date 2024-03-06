@@ -31,7 +31,6 @@ export const verifyJWT = (req, res, next) => {
     if (jwtToken) {
       const decodedToken = jwt.verify(jwtToken, JWT_SECRET);
       req.user = {
-        sub: decodedToken.sub,
         ...decodedToken.user,
       };
       next();

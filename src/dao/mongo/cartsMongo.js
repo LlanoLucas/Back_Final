@@ -33,7 +33,6 @@ export const putProductQuantity = async (cid, pid, quantity) => {
   try {
     const cart = await CartsModel.findById(cid);
     if (!cart) {
-      console.log("cart not found");
       return null;
     }
 
@@ -41,7 +40,6 @@ export const putProductQuantity = async (cid, pid, quantity) => {
       (product) => product.product._id.toString() === pid
     );
     if (!productToUpdate) {
-      console.log("product not found");
       return null;
     }
 

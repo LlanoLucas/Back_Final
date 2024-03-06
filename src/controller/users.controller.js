@@ -49,8 +49,7 @@ export const logout = (req, res) => {
 };
 
 export const current = (req, res) => {
-  let reqUser = req.user ?? req.user.user;
-  if (reqUser.sub != undefined) reqUser = reqUser.user;
+  let reqUser = req.user.user.user;
   const user = new UserDTO(reqUser);
   res.json({ status: "success", payload: user });
 };
@@ -78,6 +77,8 @@ export const forgot = async (req, res) => {
   <p style="color:red">Remember that it will expire in 1 hour.</p>
   `
   );
+
+  logger.info("Email sent");
 
   return res
     .status(200)
@@ -120,6 +121,8 @@ export const passwordReset = async (req, res) => {
   `
     );
 
+    logger.info("Password successfuly reset");
+
     return res
       .status(200)
       .json({ status: "success", msg: "Password succesfully reset" });
@@ -160,7 +163,9 @@ export const userRole = async (req, res) => {
     user.role = role;
     user.save();
 
-    res
+    logger.info("Role updated successfully");
+
+    return res
       .status(200)
       .json({ status: "success", msg: "Role updated successfully!" });
   } catch (error) {

@@ -1,5 +1,3 @@
-import { logger } from "../../utils/logger.js";
-
 const socket = io();
 const form = document.getElementById("form");
 const productsTable = document.querySelector("#productsTable");
@@ -47,7 +45,7 @@ form.addEventListener("submit", async (e) => {
         socket.emit("productList", productsEmit);
       })
       .catch((error) => {
-        logger.error("Fetch error:", error);
+        console.error("Fetch error:", error);
       });
 
     document.querySelector("#title").value = "";
@@ -57,7 +55,7 @@ form.addEventListener("submit", async (e) => {
     document.querySelector("#category").value = "";
     document.querySelector("#stock").value = "";
   } catch (error) {
-    logger.error(error);
+    console.error(error);
   }
 });
 
@@ -120,6 +118,6 @@ const deleteProduct = async (_id) => {
 
     socket.emit("productList", productsEmit);
   } catch (error) {
-    logger.error("Error in deleteProduct:", error);
+    console.error("Error in deleteProduct:", error);
   }
 };

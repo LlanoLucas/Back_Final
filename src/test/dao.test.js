@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Assert from "assert";
 import { expect } from "chai";
 import { MONGODB_URL, MONGODB_NAME } from "../config/config.js";
 import { ProductsDao } from "../dao/index.js";
@@ -7,8 +6,6 @@ import { CartsDao } from "../dao/index.js";
 import { UsersDao } from "../dao/index.js";
 
 mongoose.connect(MONGODB_URL, { dbName: `${MONGODB_NAME}_test` });
-
-const assert = Assert.strict;
 
 describe("Testing products DAO", () => {
   after(function (done) {
