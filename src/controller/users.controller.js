@@ -123,9 +123,11 @@ export const passwordReset = async (req, res) => {
 
     logger.info("Password successfuly reset");
 
-    return res
-      .status(200)
-      .json({ status: "success", msg: "Password succesfully reset" });
+    // res
+    //   .status(200)
+    //   .json({ status: "success", msg: "Password succesfully reset" });
+
+    return res.redirect("/login");
   } catch (error) {
     if (error.message === "jwt expired") return res.redirect("/forgot");
     return res.status(500).json({ status: "error", msg: error.message });

@@ -34,6 +34,8 @@ router.get(
   realTimeProducts
 );
 
+router.get("/cart", hasToken);
+
 router.get("/cart/:cid", hasToken, verifyJWT, carts);
 
 router.get("/chat", hasToken, verifyJWT, current(["user", "premium"]), chat);
