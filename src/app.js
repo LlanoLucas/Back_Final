@@ -83,7 +83,6 @@ mongoose
       logger.info("New client connected");
 
       socket.on("productList", (data) => {
-        logger.info("Received 'productList' from client:", data);
         io.emit("updatedProducts", data);
       });
 

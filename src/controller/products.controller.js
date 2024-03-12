@@ -5,7 +5,7 @@ import { logger } from "../utils/logger.js";
 
 export const getProducts = async (req, res) => {
   try {
-    const { limit = 3, page = 1, sort, query, places } = req.query;
+    const { limit = 15, page = 1, sort, query, places } = req.query;
 
     const sortOptions = sort ? { price: sort } : {};
 
