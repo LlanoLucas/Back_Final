@@ -7,6 +7,7 @@ import {
   forgot,
   passwordReset,
 } from "../controller/users.controller.js";
+import { verifyJWT } from "../middlewares/jwt.middleware.js";
 
 const router = Router();
 
@@ -29,7 +30,7 @@ router.post("/forgot", forgot);
 
 router.post("/reset-password", passwordReset);
 
-router.get("/logout", logout);
+router.get("/logout", verifyJWT, logout);
 
 router.get(
   "/current",

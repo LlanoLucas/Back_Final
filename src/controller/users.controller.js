@@ -36,8 +36,11 @@ export const login = (req, res) => {
   return res.redirect("/");
 };
 
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
   try {
+    const user = await UsersRepository.getUserById(req.user.sub);
+    user.last_connection = new Date();
+    user.save();
     res.clearCookie("jwt");
     return res.redirect("/login");
   } catch (error) {
@@ -122,10 +125,6 @@ export const passwordReset = async (req, res) => {
     );
 
     logger.info("Password successfuly reset");
-
-    // res
-    //   .status(200)
-    //   .json({ status: "success", msg: "Password succesfully reset" });
 
     return res.redirect("/login");
   } catch (error) {

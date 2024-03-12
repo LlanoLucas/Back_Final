@@ -67,6 +67,9 @@ export const initializePassport = () => {
             return done(null, false);
           }
 
+          user.last_connection = new Date();
+          user.save();
+
           return done(null, { user });
         } catch (error) {
           return done(error);
@@ -105,6 +108,9 @@ export const initializePassport = () => {
 
             user.token = token;
 
+            user.last_connection = new Date();
+            user.save();
+
             return done(null, user);
           } else {
             const newUser = await UserModel.create({
@@ -133,6 +139,9 @@ export const initializePassport = () => {
             );
 
             newUser.token = token;
+
+            user.last_connection = new Date();
+            user.save();
 
             return done(null, newUser);
           }

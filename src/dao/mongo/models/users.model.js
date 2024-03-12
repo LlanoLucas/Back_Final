@@ -28,6 +28,7 @@ const UserModel = mongoose.model(
     role: { type: String, default: "user", enum: ["admin", "premium", "user"] },
     status: { type: Boolean, default: true },
     dateCreaeted: { type: Date, default: Date.now },
+    last_connection: { type: Date },
     github: { type: Boolean, default: false },
     google: { type: Boolean, default: false },
     meta: { type: Boolean, default: false },
