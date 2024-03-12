@@ -2,6 +2,7 @@ import ProductsModel from "../dao/mongo/models/products.model.js";
 import mongoose from "mongoose";
 import { ProductsRepository } from "../repositories/index.js";
 import { logger } from "../utils/logger.js";
+import { sendMail } from "../utils/transport.js";
 
 export const getProducts = async (req, res) => {
   try {
@@ -150,6 +151,18 @@ export const deleteProduct = async (req, res) => {
       });
       logger.warning(`Product (ID: ${productId}) not found`);
       return;
+    }
+
+    if (product.owner !== "admin") {
+      sendMail(
+        product.owner,
+        "YOUR PRODUCT HAS BEEN DELETED",
+        `
+      <h1 style="background:#93c5fd;text-align:center">CODEDOM</h1>
+      
+      <h2 style="text-align:center">Your product has been deleted from the db</h2> <br>
+      <p>We are sending you this email to inform you that a validated user has deleted your product.</p>`
+      );
     }
 
     res.status(200).json({

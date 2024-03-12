@@ -39,6 +39,7 @@ export const login = (req, res) => {
 export const logout = async (req, res) => {
   try {
     const user = await UsersRepository.getUserById(req.user.sub);
+    if (!user) return res.redirect("/login");
     user.last_connection = new Date();
     user.save();
     res.clearCookie("jwt");
@@ -171,5 +172,49 @@ export const userRole = async (req, res) => {
       .json({ status: "success", msg: "Role updated successfully!" });
   } catch (error) {
     res.status(400).json({ status: "error", msg: error.message });
+  }
+};
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await UsersRepository.getAllUsers();
+
+    const formattedUsers = users.map((user) => {
+      return {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        role: user.role,
+      };
+    });
+
+    return res.status(200).json({ status: "success", payload: formattedUsers });
+  } catch (error) {
+    return res.status(400).json({ status: "error", msg: error });
+  }
+};
+
+export const deleteUsers = async (req, res) => {
+  try {
+    const deletedUsersResult = await UsersRepository.deleteInactiveUsers();
+
+    if (deletedUsersResult.deletedCount > 0) {
+      return res.status(200).json({
+        status: "success",
+        message: `${deletedUsersResult.deletedCount} inactive users deleted.`,
+      });
+    } else {
+      return res.status(200).json({
+        status: "success",
+        message: "No inactive users found.",
+      });
+    }
+  } catch (error) {
+    console.error("Error deleting inactive users:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Failed to delete inactive users.",
+      error: error,
+    });
   }
 };
