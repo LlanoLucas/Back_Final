@@ -7,7 +7,7 @@ import {
   forgot,
   passwordReset,
 } from "../controller/users.controller.js";
-import { verifyJWT } from "../middlewares/jwt.middleware.js";
+import { auth, verifyJWT } from "../middlewares/jwt.middleware.js";
 
 const router = Router();
 

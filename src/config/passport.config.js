@@ -31,12 +31,12 @@ export const initializePassport = () => {
 
           if (password !== confirmPassword) {
             logger.info("Passwords do not match");
-            return done(null, false);
+            return done(null, false, { message: "Passwords do not match" });
           }
 
           if (user) {
             logger.info("User already registered");
-            return done(null, false);
+            return done(null, false, { message: "Email already exists" });
           }
 
           req.body.password = createHash(password);
@@ -44,7 +44,9 @@ export const initializePassport = () => {
           req.body.cart = cart._id;
           const newUser = await UserModel.create({ ...req.body });
 
-          if (newUser) return done(null, newUser);
+          if (newUser) {
+            return done(null, newUser);
+          }
 
           return done(null, false);
         } catch (error) {
@@ -63,16 +65,20 @@ export const initializePassport = () => {
         try {
           const user = await UserModel.findOne({ email: username });
 
-          if (!user || !isValidPassword(password, user.password)) {
-            logger.warning("Invalid mail or password");
-            return done(null, false);
+          if (!user) {
+            logger.warning("Email adress not found");
+            return done(null, false, { message: "Email address not found." });
+          } else if (!isValidPassword(password, user.password)) {
+            logger.warning("Invalid password");
+            return done(null, false, { message: "Incorrect password." });
           }
 
           user.last_connection = new Date();
-          user.save();
+          await user.save();
 
           return done(null, { user });
         } catch (error) {
+          logger.error("Error during login:", error);
           return done(error);
         }
       }

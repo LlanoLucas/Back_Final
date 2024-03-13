@@ -144,13 +144,17 @@ export const userRole = async (req, res) => {
       return res.status(404).json({ status: "error", msg: "user not found" });
 
     if (!role)
-      res.status(404).json({ status: "error", msg: "you must declare a role" });
+      return res
+        .status(404)
+        .json({ status: "error", msg: "you must declare a role" });
 
     if (role === "admin")
-      res.status(400).json({ status: "error", msg: "You cannot be an admin" });
+      return res
+        .status(400)
+        .json({ status: "error", msg: "You cannot be an admin" });
 
     if (role === user.role)
-      res.status(400).json({
+      return res.status(400).json({
         status: "error",
         msg: "Role must be diferent than the previous",
       });
@@ -223,9 +227,11 @@ export const deleteUsers = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   const { uid } = req.params;
-  const user = await UsersRepository.getUserById(uid);
-  const email = user.email;
   try {
+    const user = await UsersRepository.getUserById(uid);
+    if (!user)
+      return res.status(404).json({ error: `User ID(${uid}) not found` });
+    const email = user.email;
     await UsersRepository.deleteUser(uid);
 
     sendMail(
@@ -245,7 +251,7 @@ export const deleteUser = async (req, res) => {
       message: `User ID(${user._id}) deleted successfully`,
     });
   } catch (error) {
-    console.error("Error deleting user:", error);
+    logger.error("Error deleting user");
     res.status(500).json({ error: "Error deleting user" });
   }
 };
