@@ -20,26 +20,29 @@
             <form
               action="/api/users/premium/{{this._id}}"
               method="POST"
+              target="hiddenFrame"
               class="m-0"
             >
               <input type="hidden" name="role" value={{this.roleChange}} />
               <button
                 type="submit"
-                class="text-blue-300 font-semibold active:text-red-700"
+                class="text-blue-300 font-semibold focus:text-gray-500"
               >
                 Change Role
               </button>
             </form>
           </td>
           <td>
+            <iframe name="hiddenFrame" style="display:none;"></iframe>
             <form
               action="/api/users/{{this._id}}?_method=DELETE"
+              target="hiddenFrame"
               method="POST"
               class="m-0"
             >
               <button
                 type="submit"
-                class="text-red-500 font-semibold active:text-red-700 focus:text-gray-500"
+                class="text-red-500 font-semibold active:text-gray-500 focus:text-gray-500"
               >
                 Delete
               </button>

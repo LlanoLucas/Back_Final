@@ -42,6 +42,7 @@ export const logout = async (req, res) => {
     user.last_connection = new Date();
     user.save();
     res.clearCookie("jwt");
+    if (req.cookies["connect.sid"]) res.clearCookie("connect.sid");
     return res.redirect("/login");
   } catch (error) {
     return res.status(500).json({
@@ -85,7 +86,7 @@ export const forgot = async (req, res) => {
 
   return res
     .status(200)
-    .json({ status: "success", msg: "Email sent", payload: { email, link } });
+    .json({ status: "success", msg: "Email sent", payload: { email } });
 };
 
 export const passwordReset = async (req, res) => {
@@ -164,11 +165,13 @@ export const userRole = async (req, res) => {
     user.role = role;
     user.save();
 
-    logger.info("Role updated successfully");
+    logger.info(`Success: User ID(${user._id}) is now ${role}`);
 
-    return res
-      .status(200)
-      .json({ status: "success", msg: "Role updated successfully!" });
+    return res.status(200).json({
+      status: "success",
+      msg: "Role updated successfully!",
+      payload: `User ID(${user._id}) is now ${role}`,
+    });
   } catch (error) {
     res.status(400).json({ status: "error", msg: error.message });
   }
@@ -220,11 +223,27 @@ export const deleteUsers = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   const { uid } = req.params;
+  const user = await UsersRepository.getUserById(uid);
+  const email = user.email;
   try {
     await UsersRepository.deleteUser(uid);
-    res
-      .status(200)
-      .json({ status: "success", message: "User deleted successfully" });
+
+    sendMail(
+      email,
+      "ACCOUNT DELETED",
+      `
+    <h1 style="background:#93c5fd;text-align:center">CODEDOM</h1>
+  <p>We are sending this email to inform you that your account has been deleted by the admin. 
+  You can always register again <a href="http://127.0.0.1:8080/register" class="italic">clicking here</a>!</p>
+  `
+    );
+
+    logger.info(`Success: User ID(${user._id}) deleted successfully`);
+
+    return res.status(200).json({
+      status: "success",
+      message: `User ID(${user._id}) deleted successfully`,
+    });
   } catch (error) {
     console.error("Error deleting user:", error);
     res.status(500).json({ error: "Error deleting user" });

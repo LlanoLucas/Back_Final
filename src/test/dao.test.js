@@ -4,13 +4,14 @@ import { MONGODB_URL, MONGODB_NAME } from "../config/config.js";
 import { ProductsDao } from "../dao/index.js";
 import { CartsDao } from "../dao/index.js";
 import { UsersDao } from "../dao/index.js";
+import { logger } from "../utils/logger.js";
 
 mongoose.connect(MONGODB_URL, { dbName: `${MONGODB_NAME}_test` });
 
 describe("Testing products DAO", () => {
   after(function (done) {
     mongoose.connection.collections.products.drop();
-    console.log("\n----- Done!! -----");
+    logger.info("\n----- Done!! -----");
     done();
   });
 
@@ -100,7 +101,7 @@ describe("Testing carts DAO", () => {
   after(function (done) {
     mongoose.connection.collections.carts.drop();
     mongoose.connection.collections.products.drop();
-    console.log("\n----- Done!! -----");
+    logger.info("\n----- Done!! -----");
     done();
   });
 
@@ -193,7 +194,7 @@ describe("Testing carts DAO", () => {
 describe("Testing sessions DAO", () => {
   after(function (done) {
     mongoose.connection.collections.users.drop();
-    console.log("\n----- Done!! -----");
+    logger.info("\n----- Done!! -----");
     done();
   });
 
