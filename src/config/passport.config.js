@@ -48,6 +48,7 @@ export const initializePassport = () => {
 
           return done(null, false);
         } catch (error) {
+          logger.error(error);
           return done(error);
         }
       }

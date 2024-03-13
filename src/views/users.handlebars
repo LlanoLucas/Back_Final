@@ -1,0 +1,54 @@
+<div>
+  <h1 class="mt-8 mb-8 text-4xl font-bold text-center">USERS ADMIN TABLE</h1>
+  <table class="my-5 text-lg w-11/12 m-auto">
+    <thead>
+      <tr class="bg-blue-200 text-center border-2 border-black">
+        <th class="border-2 border-black">NAME</th>
+        <th class="border-2 border-black">LAST NAME</th>
+        <th class="border-2 border-black">ROLE</th>
+        <th class="border-2 border-black">CHANGE ROLE</th>
+        <th class="px-2">DELETE</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each simplifiedUsers}}
+        <tr class="text-center border-2 border-black">
+          <td class="border-2 border-black px-2">{{this.first_name}}</td>
+          <td class="border-2 border-black px-2">{{this.last_name}}</td>
+          <td class="border-2 border-black px-2">{{this.role}}</td>
+          <td class="border-2 border-black">
+            <form
+              action="/api/users/premium/{{this._id}}"
+              method="POST"
+              class="m-0"
+            >
+              <input type="hidden" name="role" value={{this.roleChange}} />
+              <button
+                type="submit"
+                class="text-blue-300 font-semibold active:text-red-700"
+              >
+                Change Role
+              </button>
+            </form>
+          </td>
+          <td>
+            <form
+              action="/api/users/{{this._id}}?_method=DELETE"
+              method="POST"
+              class="m-0"
+            >
+              <button
+                type="submit"
+                class="text-red-500 font-semibold active:text-red-700 focus:text-gray-500"
+              >
+                Delete
+              </button>
+            </form>
+          </td>
+
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  <p class="block text-center italic">Reload the page to see the changes</p>
+</div>

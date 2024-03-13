@@ -204,3 +204,42 @@ export const resetPassword = (req, res) => {
   const { token } = req.query;
   res.render("reset-password", { token });
 };
+
+export const users = async (req, res) => {
+  try {
+    const user = req.user.user;
+    const isAdmin = user.role === "admin";
+    const users = await UsersRepository.getAllUsers();
+    const simplifiedUsers = users.map((user) => {
+      let roleChange;
+      switch (user.role) {
+        case "admin":
+          roleChange = "admin";
+          break;
+        case "user":
+          roleChange = "premium";
+          break;
+        case "premium":
+          roleChange = "user";
+          break;
+      }
+      return {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        role: user.role,
+        _id: user._id,
+        roleChange: roleChange,
+      };
+    });
+
+    res.render("users", {
+      simplifiedUsers,
+      user,
+      isAdmin,
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Error fetching users" });
+  }
+};

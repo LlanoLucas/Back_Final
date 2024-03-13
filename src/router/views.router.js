@@ -13,6 +13,7 @@ import {
   loggerTest,
   forgotpassword,
   resetPassword,
+  users,
 } from "../controller/views.controller.js";
 import { hasToken, auth, verifyJWT } from "../middlewares/jwt.middleware.js";
 import { current } from "../middlewares/current.middleware.js";
@@ -76,5 +77,7 @@ router.get(
 );
 
 router.get("/loggerTest", hasToken, loggerTest);
+
+router.get("/users", verifyJWT, current(["admin"]), users);
 
 export default router;

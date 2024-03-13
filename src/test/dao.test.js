@@ -226,7 +226,7 @@ describe("Testing sessions DAO", () => {
       expect(result).to.be.an("object");
     });
 
-    it("Dao should get user by ID", async () => {
+    it("Dao should get user by email", async () => {
       const user = {
         first_name: "Jo",
         last_name: "Do",
@@ -237,6 +237,54 @@ describe("Testing sessions DAO", () => {
       const createdUser = await UsersDao.registerUser(user);
       const userEmail = createdUser.email;
       const result = await UsersDao.getUserByEmail(userEmail);
+      expect(result).to.be.an("object");
+    });
+
+    it("DAO should get all users", async () => {
+      const user = {
+        first_name: "J",
+        last_name: "D",
+        email: "josee@example.com",
+        password: 12345,
+      };
+
+      const user1 = {
+        first_name: "Joel",
+        last_name: "Does",
+        email: "jos@example.com",
+        password: 12345,
+      };
+
+      const cUser = await UsersDao.registerUser(user);
+      const cUser1 = await UsersDao.registerUser(user1);
+      const result = await UsersDao.getAllUsers();
+      expect(result).to.be.an("array");
+    });
+
+    it("Dao should delete user by ID", async () => {
+      const user = {
+        first_name: "Jenny",
+        last_name: "Dizzi",
+        email: "jenny@example.com",
+        password: 12345,
+      };
+
+      const cUser = await UsersDao.registerUser(user);
+      const uid = cUser._id;
+      const result = await UsersDao.deleteUser(uid);
+      expect(result).to.be.an("object");
+    });
+
+    it("Dao should delete all inactive users for 2 days", async () => {
+      const user = {
+        first_name: "Jeremy",
+        last_name: "Dunny",
+        email: "jeremy@example.com",
+        password: 12345,
+      };
+
+      const cUser = await UsersDao.registerUser(user);
+      const result = await UsersDao.deleteInactiveUsers();
       expect(result).to.be.an("object");
     });
   });

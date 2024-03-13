@@ -39,7 +39,6 @@ export const login = (req, res) => {
 export const logout = async (req, res) => {
   try {
     const user = await UsersRepository.getUserById(req.user.sub);
-    if (!user) return res.redirect("/login");
     user.last_connection = new Date();
     user.save();
     res.clearCookie("jwt");
@@ -216,5 +215,18 @@ export const deleteUsers = async (req, res) => {
       message: "Failed to delete inactive users.",
       error: error,
     });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  const { uid } = req.params;
+  try {
+    await UsersRepository.deleteUser(uid);
+    res
+      .status(200)
+      .json({ status: "success", message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Error deleting user" });
   }
 };

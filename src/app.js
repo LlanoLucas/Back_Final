@@ -13,6 +13,7 @@ import cookieParser from "cookie-parser";
 import swaggerJSDoc from "swagger-jsdoc";
 import SwaggerUiExpress from "swagger-ui-express";
 import { addLogger, logger } from "./utils/logger.js";
+import methodOverride from "method-override";
 
 import MessageModel from "./dao/mongo/models/messages.model.js";
 import productsRouter from "./router/products.router.js";
@@ -27,6 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(addLogger);
 app.use(cookieParser());
+app.use(methodOverride("_method"));
 
 app.use(
   session({
