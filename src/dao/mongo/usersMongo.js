@@ -24,8 +24,8 @@ export const deleteUser = async (uid) => {
 
 export const deleteInactiveUsers = async () => {
   try {
-    const fiveMinutesMilliseconds = 2 * 24 * 60 * 60 * 1000;
-    const threshold = new Date(Date.now() - fiveMinutesMilliseconds);
+    const twoDaysMilisenconds = 2 * 24 * 60 * 60 * 1000;
+    const threshold = new Date(Date.now() - twoDaysMilisenconds);
     const inactiveUsers = await UserModel.find({
       last_connection: { $lt: threshold },
     });
