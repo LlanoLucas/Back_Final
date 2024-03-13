@@ -233,15 +233,10 @@ export const users = async (req, res) => {
       };
     });
 
-    const reload = () => {
-      location.reload();
-    };
-
     res.render("users", {
       simplifiedUsers,
       user,
       isAdmin,
-      reload,
     });
   } catch (error) {
     console.error("Error fetching users:", error);

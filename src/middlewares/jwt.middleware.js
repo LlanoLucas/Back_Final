@@ -39,7 +39,6 @@ export const verifyJWT = (req, res, next) => {
     }
   } catch (error) {
     logger.error("Token verification failed");
-    console.log(req.path);
     if (req.path === "/logout" && error.name === "TokenExpiredError") {
       return next();
     }
