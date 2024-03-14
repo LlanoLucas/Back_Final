@@ -125,11 +125,19 @@ export const chat = async (req, res) => {
 };
 
 export const login = (req, res) => {
-  return res.render("login", {});
+  try {
+    return res.render("login", {});
+  } catch (error) {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 export const register = (req, res) => {
-  return res.render("register", {});
+  try {
+    return res.render("register", {});
+  } catch (error) {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 export const profile = async (req, res) => {
@@ -174,13 +182,17 @@ export const callBack = async (req, res) => {
 };
 
 export const navigation = async (req, res) => {
-  let user = req.user.user.user;
-  if (!user.cart && user.role !== "admin") {
-    const dbUser = await UsersRepository.getUserByEmail(user.email);
-    user.cart = dbUser.cart.toString();
+  try {
+    let user = req.user.user.user;
+    if (!user.cart && user.role !== "admin") {
+      const dbUser = await UsersRepository.getUserByEmail(user.email);
+      user.cart = dbUser.cart.toString();
+    }
+    const isAdmin = user.role === "admin";
+    return res.render("navigation", { isAdmin, user });
+  } catch (err) {
+    return res.status(500).json({ error: "Internal Server Error" });
   }
-  const isAdmin = user.role === "admin";
-  res.render("navigation", { isAdmin, user });
 };
 
 export const loggerTest = (req, res) => {

@@ -53,9 +53,15 @@ export const logout = async (req, res) => {
 };
 
 export const current = (req, res) => {
-  let reqUser = req.user.user.user;
-  const user = new UserDTO(reqUser);
-  res.json({ status: "success", payload: user });
+  try {
+    let reqUser = req.user.user.user;
+    const user = new UserDTO(reqUser);
+    return res.json({ status: "success", payload: user });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ status: "error", message: "Internal Server Error" });
+  }
 };
 
 export const forgot = async (req, res) => {
