@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import UserDTO from "../dto/users.dto.js";
-import { UsersRepository } from "../repositories/index.js";
+import { CartsRepository, UsersRepository } from "../repositories/index.js";
 import { JWT_SECRET, NODE_ENV, MAILER_USER } from "../config/config.js";
 import { sendMail } from "../utils/transport.js";
 import { generateToken } from "../utils/token.generate.js";
@@ -232,15 +232,17 @@ export const deleteUser = async (req, res) => {
     if (!user)
       return res.status(404).json({ error: `User ID(${uid}) not found` });
     const email = user.email;
+    const cid = user.cart;
     await UsersRepository.deleteUser(uid);
+    await CartsRepository.deleteCart(cid);
 
     sendMail(
       email,
       "ACCOUNT DELETED",
       `
     <h1 style="background:#93c5fd;text-align:center">CODEDOM</h1>
-  <p>We are sending this email to inform you that your account has been deleted by the admin. 
-  You can always register again <a href="http://127.0.0.1:8080/register" class="italic">clicking here</a>!</p>
+  <p>We are sending this email to inform you that your account has been deleted by the admin. </p> <br>
+  <p>REMEMBER: You can always register again <a href="http://127.0.0.1:8080/register" style="font-style:italic;font-weight:700">clicking here</a>!</p>
   `
     );
 
