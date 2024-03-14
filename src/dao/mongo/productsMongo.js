@@ -12,11 +12,26 @@ export const addProduct = async (product) => {
 };
 
 export const updateProduct = async (pid, updated) => {
-  return await ProductsModel.findByIdAndUpdate(
+  const originalProduct = await ProductsModel.findById(pid);
+
+  const productUpdates = {};
+  for (const key in updated) {
+    if (updated.hasOwnProperty(key) && updated[key] !== originalProduct[key]) {
+      productUpdates[key] = updated[key];
+    }
+  }
+
+  if (Object.keys(productUpdates).length === 0) {
+    return "Product update skipped: No changes detected.";
+  }
+
+  const updatedProduct = await ProductsModel.findByIdAndUpdate(
     pid,
-    { ...updated },
+    productUpdates,
     { new: true }
   );
+
+  return updatedProduct;
 };
 
 export const deleteProduct = async (pid) => {

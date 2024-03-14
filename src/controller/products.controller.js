@@ -45,6 +45,10 @@ export const getProduct = async (req, res) => {
 
     if (!product) {
       logger.warning("Product not found");
+      return res.status(404).json({
+        status: "error",
+        message: `Product not found`,
+      });
     }
     res.json({ status: "success", payload: product });
   } catch (err) {
@@ -101,9 +105,22 @@ export const addProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const productId = new mongoose.Types.ObjectId(req.params.pid);
-    const { id, ...updated } = req.body;
+    const product = await ProductsRepository.getProduct(productId);
+    if (!product)
+      return res.status(404).json({
+        status: "error",
+        message: `Product ID(${req.params.pid}) not found`,
+      });
+    const { _id, ...updated } = req.body;
+    const user = req.user.user;
 
-    if (id && id !== productId) {
+    if (user.role !== "admin" && user.email !== product.owner)
+      return res.status(400).json({
+        status: "error",
+        msg: "You can only modify your own products",
+      });
+
+    if (_id && _id !== productId) {
       return res.status(400).json({ error: "Cannot modify product ID" });
     }
 
@@ -112,7 +129,11 @@ export const updateProduct = async (req, res) => {
       updated
     );
 
-    res.status(200).json({
+    if (typeof updatedProduct !== "object") {
+      return res.status(200).json({ status: "error", message: updatedProduct });
+    }
+
+    return res.status(200).json({
       message: `Product (ID: ${productId}) successfully updated!`,
       product: updatedProduct,
     });
@@ -165,11 +186,12 @@ export const deleteProduct = async (req, res) => {
       );
     }
 
+    logger.info("Deleted product:", deletedProduct.productId);
+
     res.status(200).json({
+      status: "success",
       message: `Product (ID: ${productId}) successfully deleted`,
     });
-
-    logger.info("Deleted product:", deletedProduct);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
