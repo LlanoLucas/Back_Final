@@ -15,7 +15,7 @@ import { verifyJWT } from "../middlewares/jwt.middleware.js";
 
 const router = Router();
 
-router.get("/", getCarts);
+router.get("/", verifyJWT, current(["admin"]), getCarts);
 router.get("/:cid", getCart);
 
 router.post("/", verifyJWT, current(["user", "premium"]), createCart);

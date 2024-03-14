@@ -66,6 +66,11 @@ export const addProduct = async (req, res) => {
       return res.status(404).json({ status: "error", error: "Invalid cart" });
     }
 
+    if (user.cart !== cartExists._id.toString())
+      return res
+        .status(400)
+        .json({ status: "error", msg: "You cannot edit someone else's cart" });
+
     const cart = await CartsRepository.addProduct(cid, pid);
 
     res.status(200).json({ status: "success", payload: cart });
@@ -94,6 +99,20 @@ export const modifyCart = async (req, res) => {
       product: item.productId,
       quantity: item.quantity,
     }));
+
+    const productIds = updatedProducts.map((item) => item.product);
+    const allProducts = await ProductsRepository.getProducts();
+
+    const invalidProductIds = productIds.filter(
+      (pid) => !allProducts.find((p) => p._id.toString() === pid)
+    );
+
+    if (invalidProductIds.length > 0) {
+      return res.status(404).json({
+        status: "error",
+        msg: `Product ID(s) not found: ${invalidProductIds.join(", ")}`,
+      });
+    }
 
     cart.products = updatedProducts;
 
@@ -190,6 +209,15 @@ export const purchaseCart = async (req, res) => {
       return res.status(404).json({ msg: "Cart not found" });
     }
 
+    const user = req.user.user;
+    const purchaser = user.email;
+
+    if (cid !== user.cart)
+      return res.status(400).json({
+        status: "error",
+        message: "You cannot purchase someone else's cart",
+      });
+
     if (cart.products.length === 0) {
       return res.status(404).json({ msg: "There are no products in the cart" });
     }
@@ -238,9 +266,6 @@ export const purchaseCart = async (req, res) => {
       let productData = await ProductsRepository.getProduct(product[0]);
       unTotal += productData.price * product[1];
     }
-
-    const user = req.user.user;
-    const purchaser = user.email;
 
     let boughtDetail = [];
 
