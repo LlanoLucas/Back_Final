@@ -196,16 +196,21 @@ export const navigation = async (req, res) => {
 };
 
 export const loggerTest = (req, res) => {
-  req.logger.debug("This is a debug log test");
-  req.logger.http("This is a http log test");
-  req.logger.info("This is a info log test");
-  req.logger.warning("This is a warn log test");
-  req.logger.error("This is a error log test");
-  req.logger.fatal("This is a fatal log test");
+  try {
+    req.logger.debug("This is a debug log test");
+    req.logger.http("This is a http log test");
+    req.logger.info("This is a info log test");
+    req.logger.warning("This is a warn log test");
+    req.logger.error("This is a error log test");
+    req.logger.fatal("This is a fatal log test");
 
-  const environment = NODE_ENV === "development";
+    const environment = NODE_ENV === "development";
+    const environmentValue = NODE_ENV;
 
-  return res.render("loggerTest", { environment });
+    return res.render("loggerTest", { environment, environmentValue });
+  } catch (error) {
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 export const forgotpassword = (req, res) => {
