@@ -120,9 +120,37 @@ export const updateProduct = async (req, res) => {
         msg: "You can only modify your own products",
       });
 
+    const productKeys = Object.keys(product._doc);
+    const updatedKeys = Object.keys(updated);
+
+    let notDefined = [];
+
+    updatedKeys.forEach((element) => {
+      const exists = productKeys.find((key) => key === element);
+      if (exists === undefined) notDefined.push(element);
+    });
+
+    if (notDefined.length > 0)
+      return res.status(404).json({
+        status: "error",
+        msg: `You cant modify the key(s) ${notDefined}, they don't exist in the product`,
+      });
+
     if (_id && _id !== productId) {
       return res.status(400).json({ error: "Cannot modify product ID" });
     }
+
+    const emptyValues = [];
+
+    for (const key in updated) {
+      if (updated.hasOwnProperty(key) && updated[key] === "")
+        emptyValues.push(key);
+    }
+
+    if (emptyValues.length > 0)
+      return res
+        .status(200)
+        .json({ status: "error", msg: "All the fields must have a value" });
 
     const updatedProduct = await ProductsRepository.updateProduct(
       productId,
