@@ -1,5 +1,6 @@
 import { CartsRepository, ProductsRepository } from "../repositories/index.js";
 import { TicketsRepository } from "../repositories/index.js";
+import { logger } from "../utils/logger.js";
 import { sendMail } from "../utils/transport.js";
 
 export const getCarts = async (req, res) => {
@@ -155,7 +156,7 @@ export const putProductQuantity = async (req, res) => {
 
     return res.status(200).json({ status: "success", payload: updatedCart });
   } catch (error) {
-    console.error("Error in putProductQuantity:", error);
+    logger.error("Error in putProductQuantity:", error);
     res.status(500).json({ status: "error", error: error.message });
   }
 };

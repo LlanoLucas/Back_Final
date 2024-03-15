@@ -222,7 +222,7 @@ export const deleteUsers = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("Error deleting inactive users:", error);
+    logger.error("Error deleting inactive users:", error);
     res.status(500).json({
       status: "error",
       message: "Failed to delete inactive users.",
