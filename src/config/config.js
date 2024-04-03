@@ -13,3 +13,5 @@ export const JWT_SECRET = process.env.JWT_SECRET;
 export const NODE_ENV = process.env.NODE_ENV;
 export const MAILER_USER = process.env.MAILER_USER;
 export const MAILER_PASSWORD = process.env.MAILER_PASSWORD;
+export const MP_PUBLIC_KEY = process.env.MP_PUBLIC_KEY;
+export const MP_TOKEN = process.env.MP_TOKEN;

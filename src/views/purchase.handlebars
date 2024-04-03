@@ -62,8 +62,8 @@
 
   <h2 class="mt-8 text-2xl text-center font-bold">THANK YOU FOR YOUR PURCHASE!</h2>
 
-  <footer
-    class="mt-8 mx-auto flex flex-col gap-2 w-max p-5 bg-blue-50 mb-5 rounded-md"
+  <section
+    class="mt-8 mx-auto flex flex-col gap-2 w-max p-5 bg-blue-50 mb-12 rounded-md"
   >
     <p class="block block text-center text-2xl mb-3 font-bold">TICKET</p>
     <p class="block text-center"><span class="font-bold">PURCHASER:</span><br
@@ -74,7 +74,7 @@
       />{{ticketDate}}</p>
     <p class="block text-center"><span class="font-bold">CODE:</span><br
       />{{ticketCode}}</p>
-  </footer>
+  </section>
 
 {{else}}
 
@@ -82,7 +82,7 @@
     THE PRODUCTS:</h1>
 
   <section
-    class="flex flex-col mx-auto mt-5 bg-blue-100 w-7/12 rounded-md p-2 gap-2"
+    class="flex flex-col mx-auto mt-5 bg-blue-100 w-7/12 rounded-md p-2 gap-2 mb-5"
   >
     {{#each unBoughtDetail}}
       <article

@@ -1,10 +1,17 @@
 import { PORT } from "./utils.js";
 import __dirname from "./utils.js";
 import { Server } from "socket.io";
-import { MONGODB_NAME, MONGODB_URL, SESSION_KEY } from "./config/config.js";
+import {
+  MONGODB_NAME,
+  MONGODB_URL,
+  SESSION_KEY,
+  MP_TOKEN,
+} from "./config/config.js";
 
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
+import { MercadoPagoConfig, Preference } from "mercadopago";
 import handlebars from "express-handlebars";
 import session from "express-session";
 import passport from "passport";
@@ -29,6 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(addLogger);
 app.use(cookieParser());
 app.use(methodOverride("_method"));
+app.use(cors());
 
 app.use(
   session({
@@ -54,6 +62,37 @@ const swaggerOptions = {
   apis: [`${__dirname}/docs/**/*.yaml`],
 };
 const specs = swaggerJSDoc(swaggerOptions);
+
+const client = new MercadoPagoConfig({ accessToken: MP_TOKEN });
+app.post("/create_preference", async (req, res) => {
+  try {
+    const { title, quantity, price, link } = req.body;
+
+    const body = {
+      items: [
+        {
+          title: title,
+          quantity: Number(quantity),
+          unit_price: Number(price),
+          currency_id: "ARS",
+        },
+      ],
+      back_urls: {
+        success: "https://www.google.com",
+        failure: "https://www.google.com",
+        pendings: "https://www.google.com",
+      },
+      auto_return: "approved",
+    };
+
+    const preference = new Preference(client);
+    const result = await preference.create({ body });
+    res.json({ id: result.id });
+  } catch (error) {
+    logger.error(error);
+    res.status(500).json({ status: error, msg: "Error creating preference" });
+  }
+});
 
 app.use("/apidocs", SwaggerUiExpress.serve, SwaggerUiExpress.setup(specs));
 

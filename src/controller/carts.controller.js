@@ -1,4 +1,8 @@
-import { CartsRepository, ProductsRepository } from "../repositories/index.js";
+import {
+  CartsRepository,
+  ProductsRepository,
+  UsersRepository,
+} from "../repositories/index.js";
 import { TicketsRepository } from "../repositories/index.js";
 import { logger } from "../utils/logger.js";
 import { sendMail } from "../utils/transport.js";
@@ -50,7 +54,7 @@ export const addProduct = async (req, res) => {
     }
 
     const owner = product.owner;
-    const user = req.user.user;
+    const user = await UsersRepository.getUserByEmail(req.user.user.email);
 
     if (owner !== "admin" && owner === user.email) {
       logger.warning("You cannot add a product you own to your cart");
@@ -67,7 +71,7 @@ export const addProduct = async (req, res) => {
       return res.status(404).json({ status: "error", error: "Invalid cart" });
     }
 
-    if (user.cart !== cartExists._id.toString())
+    if (user.cart.toString() !== cartExists._id.toString())
       return res
         .status(400)
         .json({ status: "error", msg: "You cannot edit someone else's cart" });

@@ -17,6 +17,12 @@ const router = Router();
 
 router.get("/", verifyJWT, current(["admin"]), getCarts);
 router.get("/:cid", getCart);
+router.get(
+  "/:cid/purchase",
+  verifyJWT,
+  current(["user", "premium"]),
+  purchaseCart
+);
 
 router.post("/", verifyJWT, current(["user", "premium"]), createCart);
 router.post(
@@ -24,12 +30,6 @@ router.post(
   verifyJWT,
   current(["user", "premium"]),
   addProduct
-);
-router.get(
-  "/:cid/purchase",
-  verifyJWT,
-  current(["user", "premium"]),
-  purchaseCart
 );
 
 router.put("/:cid", verifyJWT, current(["user", "premium"]), modifyCart);
@@ -46,6 +46,7 @@ router.delete(
   current(["user", "premium"]),
   deleteProduct
 );
+
 router.delete(
   "/:cid",
   verifyJWT,
