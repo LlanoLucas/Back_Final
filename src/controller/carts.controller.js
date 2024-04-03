@@ -214,10 +214,10 @@ export const purchaseCart = async (req, res) => {
       return res.status(404).json({ msg: "Cart not found" });
     }
 
-    const user = req.user.user;
+    const user = await UsersRepository.getUserByEmail(req.user.user.email);
     const purchaser = user.email;
 
-    if (cid !== user.cart)
+    if (cid !== user.cart.toString())
       return res.status(400).json({
         status: "error",
         message: "You cannot purchase someone else's cart",

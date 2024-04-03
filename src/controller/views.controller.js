@@ -105,7 +105,7 @@ export const carts = async (req, res) => {
 
     const cartLength = modifiedCart.products.length !== 0 ? true : false;
 
-    res.render("carts", { cart: modifiedCart, grandTotal, cartLength });
+    res.render("carts", { cart: modifiedCart, grandTotal, cartLength, cid });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }

@@ -1,68 +1,70 @@
 <div class="mt-20 mb-5">
+
   <h1
     class="text-4xl text-center font-bold bg-blue-300 py-1 w-full border-y-2 border-blue-500"
   >CART</h1>
   <main class="flex flex-col mt-8 mx-auto justify-center items-center">
     <section class="flex flex-col bg-blue-100 w-1/3 rounded-md p-2 gap-2">
-    {{#if cartLength}}
-      {{#each cart.products}}
-        <article
-          class="flex justify-between items-center py-3 px-5 rounded bg-blue-50 w-full"
-        >
-          <div>
-            <h2
-              class="text-2xl uppercase font-semibold"
-            >{{this.product.title}}</h2>
-            <p class="text-start"><b class="font-semibold">Places left:</b>
-              {{this.product.stock}}</p>
-          </div>
-          <div>
-            <div class="flex gap-1 items-center justify-end">
-              <p class="text-start">{{this.quantity}}
-                x
-                <span
-                  class="text-start font-semibold"
-                >${{this.product.price}}</span></p>
+      {{#if cartLength}}
+        {{#each cart.products}}
+          <article
+            class="flex justify-between items-center py-3 px-5 rounded bg-blue-50 w-full"
+          >
+            <div>
+              <h2
+                class="text-2xl uppercase font-semibold"
+              >{{this.product.title}}</h2>
+              <p class="text-start"><b class="font-semibold">Places left:</b>
+                {{this.product.stock}}</p>
             </div>
-            <p class="text-2xl font-bold subtotals">${{this.totalPrice}}</p>
-          </div>
-          <div class="">
-            <iframe name="hiddenFrame" style="display:none;"></iframe>
-            <form
-              action="/api/carts/{{../cart._id}}/products/{{this.product._id}}?_method=DELETE"
-              target="hiddenFrame"
-              method="POST"
-              class="m-0"
-            >
-              <button
-                type="submit"
-                class="text-red-500 font-semibold active:text-gray-500 focus:text-gray-500"
-                onclick="showNotification()"
+            <div>
+              <div class="flex gap-1 items-center justify-end">
+                <p class="text-start">{{this.quantity}}
+                  x
+                  <span
+                    class="text-start font-semibold"
+                  >${{this.product.price}}</span></p>
+              </div>
+              <p class="text-2xl font-bold subtotals">${{this.totalPrice}}</p>
+            </div>
+            <div class="">
+              <iframe name="hiddenFrame" style="display:none;"></iframe>
+              <form
+                action="/api/carts/{{../cart._id}}/products/{{this.product._id}}?_method=DELETE"
+                target="hiddenFrame"
+                method="POST"
+                class="m-0"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  class="bi bi-trash-fill scale-125"
-                  viewBox="0 0 16 16"
+                <button
+                  type="submit"
+                  class="text-red-500 font-semibold active:text-gray-500 focus:text-gray-500"
+                  onclick="showNotification()"
                 >
-                  <path
-                    d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"
-                  />
-                </svg>
-              </button>
-            </form>
-          </div>
-        </article>
-      {{/each}}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-trash-fill scale-125"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"
+                    />
+                  </svg>
+                </button>
+              </form>
+            </div>
+          </article>
+        {{/each}}
 
       {{else}}
         <h2 class="text-xl font-semibold text-center">The cart is empty</h2>
 
-    {{/if}}
-    
+      {{/if}}
     </section>
+
+    <p id="cartId" class="hidden">{{cid}}</p>
 
     <div
       class="flex w-1/3 text-2xl px-6 justify-between gap-5 items-center mt-5 border-b border-black pb-2"
@@ -73,24 +75,18 @@
 
     <button
       id="checkoutBtn"
-      cartId="{{cartId}}"
       class="cursor-pointer w-1/3 mt-4 text-center border-2 bg-blue-200 border-blue-400 py-0.5 text-xl font-semibold rounded hover:bg-blue-300 hover:border-blue-500 active:scale-95 transition-all duration-300"
     >PROCEED TO CHECKOUT</button>
     <div id="wallet_container"></div>
   </main>
-  <p class="italic block text-center mt-3 font-semibold">Reset the page to view changes</p>
+  <p class="italic block text-center mt-3 font-semibold">Reset the page to view
+    changes</p>
 
 </div>
 
 <script>
-  function showNotification() {
-    Toastify({
-      text: "Product deleted!",
-      duration: 3000,
-      backgroundColor: "#ff0000",
-      gravity: "bottom",
-      position: "right",
-    }).showToast();
-  }
+  function showNotification() { Toastify({ text: "Product deleted!", duration:
+  3000, backgroundColor: "#ff0000", gravity: "bottom", position: "right",
+  }).showToast(); }
 </script>
 <script src="/js/checkout.js"></script>
