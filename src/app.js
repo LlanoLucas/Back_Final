@@ -78,9 +78,9 @@ app.post("/create_preference", async (req, res) => {
         },
       ],
       back_urls: {
-        success: "https://www.google.com",
-        failure: "https://www.google.com",
-        pendings: "https://www.google.com",
+        success: link,
+        failure: link,
+        pendings: link,
       },
       auto_return: "approved",
     };
