@@ -39,7 +39,7 @@ export const deleteInactiveUsers = async () => {
           `
           <h1 style="background:#93c5fd;text-align:center">CODEDOM</h1>
           <p>We are sending this email to inform you that your account has been deleted due to inactivity. 
-          You can always register again <a href="http://127.0.0.1:8080/register" class="italic">clicking here</a>!</p>
+          You can always register again <a href="https://backfinal-production-4974.up.railway.app/register" class="italic">clicking here</a>!</p>
           `
         );
       });

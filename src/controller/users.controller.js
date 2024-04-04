@@ -75,7 +75,7 @@ export const forgot = async (req, res) => {
     });
 
   const token = generateToken(user, "1h");
-  const link = `http://127.0.0.1:8080/reset-password?token=${token}`;
+  const link = `https://backfinal-production-4974.up.railway.app?token=${token}`;
 
   sendMail(
     email,
@@ -83,7 +83,7 @@ export const forgot = async (req, res) => {
     `
     <h1 style="background:#93c5fd;text-align:center">CODEDOM</h1>
   <p>Here is the link to reset your password:</p><br>
-  <a href="${link}">http://127.0.0.1/api/session/reset-password?token=...</a><br>
+  <a href="${link}">https://backfinal-production-4974.up.railway.app/api/session/reset-password?token=...</a><br>
   <p style="color:red">Remember that it will expire in 1 hour.</p>
   `
   );
@@ -127,7 +127,7 @@ export const passwordReset = async (req, res) => {
       `
     <h1 style="background:#93c5fd;text-align:center">CODEDOM</h1>
   <h2>Your password has ben successfuly reset.</h2><br>
-  <p>If it wasn't you, <a href="http://127.0.0.1:8080/forgot" class="italic">click here</a> to reset your password again.</p>
+  <p>If it wasn't you, <a href="https://backfinal-production-4974.up.railway.app/forgot" class="italic">click here</a> to reset your password again.</p>
   `
     );
 
@@ -248,7 +248,7 @@ export const deleteUser = async (req, res) => {
       `
     <h1 style="background:#93c5fd;text-align:center">CODEDOM</h1>
   <p>We are sending this email to inform you that your account has been deleted by the admin. </p> <br>
-  <p>REMEMBER: You can always register again <a href="http://127.0.0.1:8080/register" style="font-style:italic;font-weight:700">clicking here</a>!</p>
+  <p>REMEMBER: You can always register again <a href="https://backfinal-production-4974.up.railway.app/register" style="font-style:italic;font-weight:700">clicking here</a>!</p>
   `
     );
 
