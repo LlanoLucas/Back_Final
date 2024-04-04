@@ -75,7 +75,7 @@ export const forgot = async (req, res) => {
     });
 
   const token = generateToken(user, "1h");
-  const link = `https://backfinal-production-4974.up.railway.app?token=${token}`;
+  const link = `https://backfinal-production-4974.up.railway.app/reset-password?token=${token}`;
 
   sendMail(
     email,
