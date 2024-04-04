@@ -113,7 +113,7 @@ mongoose
   .connect(MONGODB_URL, { dbName: MONGODB_NAME })
   .then(() => {
     logger.info("DB connected");
-    const httpServer = app.listen(PORT, () =>
+    const httpServer = app.listen(PORT, "0.0.0.0", () =>
       logger.info(`Listening on port ${PORT}...`)
     );
 

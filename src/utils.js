@@ -5,4 +5,4 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default __dirname;
-export const PORT = 8080;
+export const PORT = process.env.PORT || 8080;
