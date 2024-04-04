@@ -11,7 +11,7 @@ checkoutBtn.addEventListener("click", async () => {
       title: "CODEDOM COURSE(S)",
       quantity: 1,
       price: document.getElementById("grandTotal").innerHTML,
-      link: `https://backfinal-production-4974.up.railway.app/${cartId}/purchase`,
+      link: `/api/carts/${cartId}/purchase`,
     };
 
     const response = await fetch("/create_preference", {
