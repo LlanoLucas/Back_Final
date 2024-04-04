@@ -4,7 +4,6 @@ const mp = new MercadoPago("TEST-7cf89420-e96e-401f-a760-38bb91d4c307", {
 
 const checkoutBtn = document.getElementById("checkoutBtn");
 const cartId = document.getElementById("cartId").innerHTML;
-console.log(cartId);
 
 checkoutBtn.addEventListener("click", async () => {
   try {
@@ -15,16 +14,13 @@ checkoutBtn.addEventListener("click", async () => {
       link: `http://127.0.0.1:8080/api/carts/${cartId}/purchase`,
     };
 
-    const response = await fetch(
-      "https://backfinal-production-e7c6.up.railway.app/create_preference",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      }
-    );
+    const response = await fetch("/create_preference", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(orderData),
+    });
 
     const preference = await response.json();
     createCheckoutButton(preference.id);

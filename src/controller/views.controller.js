@@ -100,7 +100,11 @@ export const carts = async (req, res) => {
     });
 
     const grandTotal = modifiedCart.products.reduce((total, product) => {
-      return total + (product.totalPrice || 0);
+      if (product.product.stock > 0) {
+        return total + product.quantity * product.product.price;
+      } else {
+        return total;
+      }
     }, 0);
 
     const cartLength = modifiedCart.products.length !== 0 ? true : false;
